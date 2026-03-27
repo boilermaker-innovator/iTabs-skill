@@ -3,316 +3,444 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iTabs Skills Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<title>iTabs — Build Your Free Widget</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 :root {
-  --bg: #0e1a2b;
-  --card: #132035;
-  --border: #1e3050;
-  --blue: #4a9eff;
-  --denim: #2d6ab4;
-  --sky: #7ec8f0;
-  --cream: #e8d9b0;
-  --muted: #3a5478;
-  --text: #d4e8ff;
-  --dim: #4a6a8a;
+  --bg: #0a0a0f; --card: #12121a; --border: #1e1e2e;
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12); --amber-border: rgba(245,158,11,0.3);
+  --text: #ffffff; --muted: #9090b0; --green: #10b981; --radius: 14px;
 }
-body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--bg);
-  background-image: radial-gradient(circle, #1a3050 1px, transparent 1px);
-  background-size: 28px 28px;
-  color: var(--text);
-  min-height: 100vh;
-}
-
-/* NAV */
-.nav {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0;
-  background: rgba(14,26,43,0.97);
-  backdrop-filter: blur(8px);
-  z-index: 10;
-}
-.nav-btn {
-  flex: 1; padding: 14px 8px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; letter-spacing: 0.08em;
-  color: var(--dim); background: transparent;
-  border: none; cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-.nav-btn.active { color: var(--sky); border-bottom-color: var(--sky); }
-.nav-btn.missy-tab.active { color: var(--cream); border-bottom-color: var(--cream); }
-
-/* PANELS */
-.panel { display: none; padding: 20px 16px 80px; max-width: 480px; margin: 0 auto; }
-.panel.active { display: block; }
-
-/* SKILLS PANEL */
-.page-header { margin-bottom: 24px; }
-.tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--sky); letter-spacing: 0.15em; margin-bottom: 8px; }
-h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-.sub { font-size: 13px; color: var(--dim); }
-.section { margin-bottom: 24px; }
-.section-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; color: var(--muted);
-  letter-spacing: 0.1em; text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.skill {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 13px; margin-bottom: 7px;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-.skill-info { flex: 1; min-width: 0; }
-.skill-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-.skill-desc { font-size: 12px; color: var(--dim); }
-.btn {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; font-weight: 500;
-  padding: 7px 14px; border-radius: 6px;
-  border: none; background: var(--denim); color: #fff;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0;
-  text-decoration: none; display: inline-block;
-  transition: background 0.15s;
-}
-.btn:hover { background: var(--blue); }
-.planned { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); flex-shrink: 0; }
-
-/* MISSY PANEL */
-.missy-wrap {
-  display: flex; flex-direction: column;
-  align-items: center; padding: 32px 0 0;
-  gap: 0;
-}
-.missy-avatar {
-  width: 88px; height: 88px; border-radius: 50%;
-  background: linear-gradient(145deg, #1a4a7a, #2d6ab4, #4a9eff);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 40px; margin-bottom: 16px;
-  box-shadow: 0 0 0 4px #132035, 0 0 0 6px #2d6ab430, 0 12px 32px rgba(74,158,255,0.15);
-}
-.missy-name {
-  font-size: 28px; font-weight: 600;
-  color: var(--cream); letter-spacing: 0.03em;
-  margin-bottom: 6px;
-}
-.missy-tagline { font-size: 14px; color: var(--dim); margin-bottom: 6px; text-align: center; line-height: 1.5; }
-.missy-badge {
-  font-family: 'IBM Plex Mono', monospace; font-size: 9px;
-  padding: 3px 10px; border-radius: 20px;
-  background: rgba(232,217,176,0.06); color: var(--cream);
-  border: 1px solid rgba(232,217,176,0.15); letter-spacing: 0.1em;
-  margin-bottom: 32px;
-}
-
-.missy-open-btn {
-  display: block; width: 100%;
-  padding: 18px; border-radius: 14px;
-  background: linear-gradient(135deg, #1a4a7a, #2d6ab4);
-  border: 1px solid rgba(74,158,255,0.3);
-  color: #fff; text-decoration: none; text-align: center;
-  font-size: 16px; font-weight: 600;
-  letter-spacing: 0.02em;
-  transition: all 0.2s;
-  box-shadow: 0 4px 20px rgba(45,106,180,0.3);
-  margin-bottom: 12px;
-}
-.missy-open-btn:hover { background: linear-gradient(135deg, #2d6ab4, #4a9eff); box-shadow: 0 6px 28px rgba(74,158,255,0.35); }
-.missy-open-btn .btn-icon { font-size: 22px; display: block; margin-bottom: 4px; }
-.missy-open-btn .btn-sub { font-size: 12px; opacity: 0.7; font-weight: 400; margin-top: 2px; }
-
-.missy-hint {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 16px; margin-top: 20px;
-  width: 100%;
-}
-.missy-hint-title {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; color: var(--muted); letter-spacing: 0.1em;
-  text-transform: uppercase; margin-bottom: 10px;
-}
-.hint-row {
-  display: flex; gap: 10px; align-items: flex-start;
-  margin-bottom: 8px; font-size: 13px; color: var(--dim); line-height: 1.4;
-}
-.hint-row:last-child { margin-bottom: 0; }
-.hint-num {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; color: var(--sky);
-  background: rgba(126,200,240,0.08);
-  border: 1px solid rgba(126,200,240,0.15);
-  border-radius: 4px; padding: 2px 6px;
-  flex-shrink: 0; margin-top: 1px;
-}
-
-footer {
-  margin-top: 32px; text-align: center;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; color: var(--muted);
-}
-footer a { color: var(--sky); text-decoration: none; }
+html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
+.wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 60px; }
+.header { text-align: center; padding: 32px 0 28px; }
+.header-logo { font-size: 36px; margin-bottom: 12px; }
+.header h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.header h1 span { color: var(--amber); }
+.header p { font-size: 15px; color: var(--muted); line-height: 1.6; }
+.badge { display: inline-block; margin-top: 12px; padding: 5px 14px; background: var(--amber-dim); border: 1px solid var(--amber-border); border-radius: 20px; font-size: 12px; color: var(--amber); font-weight: 600; }
+.progress-wrap { margin-bottom: 28px; }
+.progress-steps { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.progress-step { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s; }
+.progress-step.active { color: var(--amber); }
+.progress-step.done { color: var(--green); }
+.progress-bar { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--amber); border-radius: 4px; transition: width 0.4s ease; }
+.step { display: none; animation: fadeIn 0.3s ease; }
+.step.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.step-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--amber); text-transform: uppercase; margin-bottom: 8px; }
+.step-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.step-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+.trade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+.trade-card { background: var(--card); border: 2px solid var(--border); border-radius: var(--radius); padding: 16px 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+.trade-card:hover { border-color: var(--amber-border); }
+.trade-card.selected { border-color: var(--amber); background: var(--amber-dim); }
+.trade-icon { font-size: 28px; margin-bottom: 6px; }
+.trade-name { font-size: 13px; font-weight: 700; }
+.trade-check { display: none; font-size: 11px; color: var(--amber); margin-top: 4px; font-weight: 600; }
+.trade-card.selected .trade-check { display: block; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+.field input { width: 100%; padding: 13px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+.field input:focus { border-color: var(--amber); }
+.field input::placeholder { color: var(--muted); }
+.services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.service-chip { background: var(--card); border: 2px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+.service-chip:hover { border-color: var(--amber-border); }
+.service-chip.selected { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
+.chip-icon { font-size: 16px; flex-shrink: 0; }
+.chip-check { margin-left: auto; font-size: 14px; display: none; }
+.service-chip.selected .chip-check { display: block; }
+.custom-service { width: 100%; padding: 12px 16px; background: var(--card); border: 1px dashed var(--border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; margin-bottom: 8px; }
+.custom-service:focus { border-color: var(--amber); border-style: solid; }
+.custom-service::placeholder { color: var(--muted); }
+.btn-primary { width: 100%; padding: 16px; background: var(--amber); border: none; border-radius: 12px; color: #000; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+.btn-primary:hover { background: #d97706; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-back { background: none; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 14px; font-family: inherit; padding: 10px 20px; cursor: pointer; margin-bottom: 12px; transition: all 0.2s; }
+.btn-back:hover { border-color: var(--amber-border); color: var(--text); }
+/* PREVIEW WIDGET */
+.widget-preview { border: 2px solid var(--amber-border); border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: #0a0a0f; position: relative; }
+.preview-progress { display: flex; gap: 3px; padding: 8px 16px 0; background: #12121a; }
+.preview-seg { flex: 1; height: 2px; background: rgba(255,255,255,0.15); border-radius: 2px; transition: background 0.3s; }
+.preview-seg.active { background: #7c3aed; }
+.preview-seg.viewed { background: rgba(255,255,255,0.5); }
+.preview-hero { padding: 24px 18px 18px; min-height: 110px; display: flex; flex-direction: column; justify-content: flex-end; }
+.hero-default { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+.hero-cyan    { background: linear-gradient(135deg, #164e63 0%, #0c4a6e 100%); }
+.hero-purple  { background: linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%); }
+.hero-amber   { background: linear-gradient(135deg, #78350f 0%, #431407 100%); }
+.hero-green   { background: linear-gradient(135deg, #14532d 0%, #052e16 100%); }
+.preview-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 5px; }
+.preview-headline { font-size: 17px; font-weight: 800; line-height: 1.3; color: #fff; }
+.preview-headline em { font-style: normal; color: #fcd34d; }
+.preview-body { padding: 14px 18px; background: #12121a; }
+.preview-summary { font-size: 13px; color: #9090b0; line-height: 1.6; margin-bottom: 10px; }
+.preview-ibtn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: 20px; color: #f59e0b; font-size: 11px; font-weight: 600; }
+.preview-dot { width: 15px; height: 15px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #000; }
+.preview-nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; background: #12121a; border-top: 1px solid #1e1e2e; }
+.preview-nav-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.08); border: none; color: #fff; font-size: 14px; cursor: pointer; }
+.preview-counter { font-size: 12px; color: #9090b0; }
+.preview-footer-bar { text-align: center; padding: 6px; font-size: 10px; color: rgba(255,255,255,0.2); background: #12121a; }
+.float-quote-btn { position: absolute; bottom: 56px; right: 12px; background: #f59e0b; border: none; border-radius: 20px; padding: 8px 14px; color: #000; font-size: 11px; font-weight: 700; }
+.preview-note { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #9090b0; line-height: 1.6; }
+/* SUCCESS */
+.success-wrap { text-align: center; padding: 40px 20px; }
+.success-icon { font-size: 64px; margin-bottom: 20px; }
+.success-title { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+.success-title span { color: var(--amber); }
+.success-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+.success-steps { text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.success-step { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.success-step:not(:last-child) { border-bottom: 1px solid var(--border); }
+.step-num { width: 22px; height: 22px; background: var(--amber-dim); border: 1px solid var(--amber-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+.footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--muted); }
+.footer a { color: var(--amber); text-decoration: none; }
+.error-msg { color: #ef4444; font-size: 13px; margin-top: 6px; display: none; }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="nav">
-  <button class="nav-btn" onclick="show('skills',this)">SKILLS</button>
-  <button class="nav-btn missy-tab active" onclick="show('missy',this)">☮ MISSY</button>
-</div>
-
-<!-- SKILLS PANEL -->
-<div id="skills" class="panel">
-  <div class="page-header">
-    <div class="tag">ITABS-SKILL</div>
-    <h1>Skills Library</h1>
-    <p class="sub">Tap a skill — opens directly in Claude</p>
+  <div id="demoBanner" style="display:none; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:#f59e0b; text-align:center;">
+    👀 <strong>Demo mode</strong> — pre-filled with Pete's Fencing Co. <a onclick="clearDemo()" style="color:#fff;cursor:pointer;text-decoration:underline;">Start fresh</a>
   </div>
 
-  <div class="section">
-    <div class="section-label">🟠 Your Skills</div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">iTabs Widget Builder</div>
-        <div class="skill-desc">Build any swipeable card widget</div>
-      </div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fboilermaker-innovator%2FiTabs-skill%2Fmain%2Fitabs-widget-builder%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">iTabs Video Summary</div>
-        <div class="skill-desc">YouTube video → iTabs card deck</div>
-      </div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fboilermaker-innovator%2FiTabs-skill%2Fmain%2Fitabs-video-summary%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">Gmail & Calendar MCP</div>
-        <div class="skill-desc">Session logs, leads, calendar</div>
-      </div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fboilermaker-innovator%2FiTabs-skill%2Fmain%2Fgmail-gcal-mcp%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">Missy — AI Coach</div>
-        <div class="skill-desc">Talk things over, get direction</div>
-      </div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fboilermaker-innovator%2FiTabs-skill%2Fmain%2Fmissy%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">iTabs Quotes Engine</div>
-        <div class="skill-desc">Config-driven quote estimators for tradies</div>
-      </div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fboilermaker-innovator%2FiTabs-skill%2Fmain%2Fitabs-quotes-engine-SKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">Skills Librarian</div>
-        <div class="skill-desc">Auto-update this index from Gmail logs</div>
-      </div>
-      <span class="planned">Next →</span>
-    </div>
-    <div class="skill">
-      <div class="skill-info">
-        <div class="skill-name">LinkedIn Post Writer</div>
-        <div class="skill-desc">Write posts about your builds</div>
-      </div>
-      <span class="planned">Next →</span>
+  <div class="header">
+    <div class="header-logo">🛠️</div>
+    <h1>Get your free <span>iTabs widget</span></h1>
+    <p>Fill in your details. We'll build your branded mobile widget and email it to you — free.</p>
+    <div class="badge">⚡ Built automatically · Live link in minutes</div>
+    <div style="margin-top:16px;">
+      <button onclick="loadDemo()" style="background:none;border:1px solid rgba(245,158,11,0.4);border-radius:8px;color:#f59e0b;font-size:13px;font-family:inherit;padding:8px 18px;cursor:pointer;">👀 See a demo</button>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">🔵 Documents</div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">Word (docx)</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Fdocx%2FSKILL.md" target="_blank">Open ↗</a>
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <span class="progress-step active" id="ps1">1. Trade</span>
+      <span class="progress-step" id="ps2">2. Details</span>
+      <span class="progress-step" id="ps3">3. Services</span>
+      <span class="progress-step" id="ps4">4. Preview</span>
+      <span class="progress-step" id="ps5">5. Done</span>
     </div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">PDF</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Fpdf%2FSKILL.md" target="_blank">Open ↗</a>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <div class="step-label">Step 1 of 4</div>
+    <div class="step-title">What's your trade?</div>
+    <div class="step-sub">Pick the one that fits best — we'll build your widget around it.</div>
+    <div class="trade-grid">
+      <div class="trade-card" onclick="selectTrade(this,'Fencing')"><div class="trade-icon">🏗️</div><div class="trade-name">Fencing</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Plumbing')"><div class="trade-icon">🔧</div><div class="trade-name">Plumbing</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Electrical')"><div class="trade-icon">⚡</div><div class="trade-name">Electrical</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Painting')"><div class="trade-icon">🎨</div><div class="trade-name">Painting</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Landscaping')"><div class="trade-icon">🌿</div><div class="trade-name">Landscaping</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Paving')"><div class="trade-icon">🧱</div><div class="trade-name">Paving</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Carpentry')"><div class="trade-icon">🪚</div><div class="trade-name">Carpentry</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" onclick="selectTrade(this,'Tiling')"><div class="trade-icon">🏠</div><div class="trade-name">Tiling</div><div class="trade-check">✓ Selected</div></div>
+      <div class="trade-card" id="otherTradeCard" onclick="selectOtherTrade(this)" style="grid-column:1/-1;"><div class="trade-icon">➕</div><div class="trade-name">Other trade</div><div class="trade-check">✓ Selected</div></div>
     </div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">PowerPoint (pptx)</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Fpptx%2FSKILL.md" target="_blank">Open ↗</a>
+    <div id="otherTradeField" style="display:none;margin-bottom:20px;">
+      <input type="text" id="otherTradeName" placeholder="e.g. Roof tiling, Concreting, Air conditioning..." style="width:100%;padding:13px 16px;background:var(--card);border:1px solid var(--amber);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;" oninput="validateOtherTrade()">
     </div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">Excel (xlsx)</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Fxlsx%2FSKILL.md" target="_blank">Open ↗</a>
+    <button class="btn-primary" id="btn1" disabled onclick="goTo(2)">Next — Add your details →</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <button class="btn-back" onclick="goTo(1)">← Back</button>
+    <div class="step-label">Step 2 of 4</div>
+    <div class="step-title">Tell us about your business</div>
+    <div class="step-sub">This goes on your widget — keep it how you'd say it to a customer.</div>
+    <div class="field"><label>Business name *</label><input type="text" id="bizName" placeholder="e.g. Pete's Fencing Co" oninput="validateStep2()"></div>
+    <div class="field"><label>Suburb *</label><input type="text" id="suburb" placeholder="e.g. Rockingham" oninput="validateStep2()"></div>
+    <div class="field"><label>Your phone</label><input type="tel" id="phone" placeholder="e.g. 0412 333 444"></div>
+    <div class="field"><label>Your website <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="url" id="website" placeholder="e.g. www.petesfencing.com.au"></div>
+    <div class="field"><label>WhatsApp number <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional — customers tap to message you)</span></label><input type="tel" id="whatsapp" placeholder="e.g. 0412 333 444"></div>
+    <div class="field"><label>Facebook page name <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional — e.g. greenlinefencing)</span></label><input type="text" id="facebook" placeholder="e.g. greenlinefencing"></div>
+    <div class="field"><label>Instagram handle <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional — e.g. greenlinefencing)</span></label><input type="text" id="instagram" placeholder="e.g. greenlinefencing"></div>
+    <div class="field">
+      <label>Your email * <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(we send your widget here)</span></label>
+      <input type="email" id="email" placeholder="e.g. pete@example.com" oninput="validateStep2()">
+      <div class="error-msg" id="emailError">Please enter a valid email address</div>
+    </div>
+    <button class="btn-primary" id="btn2" disabled onclick="goTo(3)">Next — Pick your services →</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <button class="btn-back" onclick="goTo(2)">← Back</button>
+    <div class="step-label">Step 3 of 4</div>
+    <div class="step-title">What services do you offer?</div>
+    <div class="step-sub">Pick as many as you like. These become the cards in your widget.</div>
+    <div class="services-grid" id="servicesGrid"></div>
+    <input class="custom-service" type="text" id="customService" placeholder="+ Add a custom service (optional)" oninput="validateStep3()">
+    <div style="margin-bottom:20px"></div>
+    <button class="btn-primary" id="btn3" disabled onclick="goTo(4)">Preview my widget →</button>
+  </div>
+
+  <!-- STEP 4: PREVIEW -->
+  <div class="step" id="step4">
+    <button class="btn-back" onclick="goTo(3)">← Back</button>
+    <div class="step-label">Step 4 of 4</div>
+    <div class="step-title">Here's your widget</div>
+    <div class="step-sub">This is what your customers will see. Swipe through the cards.</div>
+
+    <div class="widget-preview">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px 6px;background:#12121a;">
+        <button class="preview-nav-btn" onclick="previewNav(-1)" style="font-size:22px;font-weight:300;">‹</button>
+        <span class="preview-counter" id="previewCounter">1 / 1</span>
+        <button class="preview-nav-btn" onclick="previewNav(1)" style="font-size:22px;font-weight:300;">›</button>
+      </div>
+      <div class="preview-progress" id="previewProgress"></div>
+      <div id="previewCardContainer"></div>
+      <div class="preview-footer-bar">Powered by iTabs — itabs.ai</div>
+      <button class="float-quote-btn">🛠️ Get a Quote</button>
+    </div>
+
+    <div class="preview-note">
+      ✨ <strong style="color:#f59e0b">This is your free prototype.</strong> Once built, personalise it with your logo, photos and brand colours for <strong style="color:#fff">$290 — one-off, no ongoing fees.</strong>
+    </div>
+
+    <button class="btn-primary" onclick="submitForm()">🚀 Yes — build my free widget!</button>
+  </div>
+
+  <!-- STEP 5: SUCCESS -->
+  <div class="step" id="step5">
+    <div class="success-wrap">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Your widget is <span>being built!</span></div>
+      <div class="success-sub">Check your email in a few minutes — you'll get a live link to your widget.</div>
+      <div class="success-steps">
+        <div class="success-step"><span class="step-num">1</span>Your brief has been sent to our builder</div>
+        <div class="success-step"><span class="step-num">2</span>Claude AI builds your widget automatically</div>
+        <div class="success-step"><span class="step-num">3</span>Live link lands in your inbox in minutes</div>
+        <div class="success-step"><span class="step-num">4</span>Like what you see? Personalise it for $290 — logo, photos, brand colours</div>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">🔵 Design & Dev</div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">Frontend Design</div><div class="skill-desc">Polished production web UIs</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Ffrontend-design%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">MCP Builder</div><div class="skill-desc">Build MCP server integrations</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Fmcp-builder%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-    <div class="skill">
-      <div class="skill-info"><div class="skill-name">Skill Creator</div><div class="skill-desc">Create & improve SKILL.md files</div></div>
-      <a class="btn" href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fanthropics%2Fskills%2Fmain%2Fskills%2Fskill-creator%2FSKILL.md" target="_blank">Open ↗</a>
-    </div>
-  </div>
-
-  <footer><a href="https://itabs.ai">itabs.ai</a> · Mar 2026</footer>
-</div>
-
-<!-- MISSY PANEL -->
-<div id="missy" class="panel active">
-  <div class="missy-wrap">
-    <div class="missy-avatar">🚐</div>
-    <div class="missy-name">Missy</div>
-    <div class="missy-tagline">Your iTabs AI coach<br>straight up, no fluff ✌️</div>
-    <div class="missy-badge">☮ INTERNATIONAL WOMEN'S DAY 2026</div>
-
-    <a class="missy-open-btn"
-       href="https://claude.ai/new?q=Please+follow+this+skill%3A+https%3A%2F%2Fraw.githubusercontent.com%2Fboilermaker-innovator%2FiTabs-skill%2Fmain%2Fmissy%2FSKILL.md"
-       target="_blank">
-      <span class="btn-icon">🚐</span>
-      Open Missy in Claude
-      <div class="btn-sub">Tap to start a chat — she knows everything</div>
-    </a>
-
-    <div class="missy-hint">
-      <div class="missy-hint-title">How it works</div>
-      <div class="hint-row">
-        <span class="hint-num">01</span>
-        Tap the button — Claude opens with Missy ready to go
-      </div>
-      <div class="hint-row">
-        <span class="hint-num">02</span>
-        Ask her anything — build status, what to work on, talk things over
-      </div>
-      <div class="hint-row">
-        <span class="hint-num">03</span>
-        Say <strong style="color:var(--sky)">"summary"</strong> at the end — she logs the chat to your Gmail
-      </div>
-      <div class="hint-row">
-        <span class="hint-num">04</span>
-        Bookmark this page on your phone home screen — your cockpit, always one tap away
-      </div>
-    </div>
-
-  </div>
-  <footer style="margin-top:32px"><a href="https://itabs.ai">itabs.ai</a> · Mar 2026</footer>
+  <div class="footer"><a href="https://itabs.ai">Powered by iTabs — itabs.ai</a></div>
 </div>
 
 <script>
-function show(id, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+const state = { trade:'', bizName:'', suburb:'', phone:'', email:'', website:'', whatsapp:'', facebook:'', instagram:'', services:[] };
+let previewIndex = 0;
+let previewData = [];
+
+const heroColors = ['hero-default','hero-cyan','hero-purple','hero-amber','hero-green','hero-default'];
+const tagColors  = ['#fcd34d','#67e8f9','#a78bfa','#fcd34d','#6ee7b7','#fcd34d'];
+
+const tradeServices = {
+  Fencing:     ['Colorbond fencing','Timber fencing','Pool fencing','Aluminium fencing','Gate installation','Fence repairs'],
+  Plumbing:    ['Hot water systems','Blocked drains','Tap & toilet repairs','Gas fitting','Leak detection','Emergency plumbing'],
+  Electrical:  ['Power points & lighting','Switchboard upgrades','Safety inspections','Air conditioning','Solar installation','Emergency callouts'],
+  Painting:    ['Interior painting','Exterior painting','Roof painting','Deck & fence staining','Commercial painting','Pressure washing'],
+  Landscaping: ['Lawn & turf','Garden design','Retaining walls','Reticulation','Tree & hedge trimming','Mulching & edging'],
+  Paving:      ['Brick paving','Concrete driveways','Exposed aggregate','Limestone paving','Pathway & alfresco','Repointing & repairs'],
+  Carpentry:   ['Decks & pergolas','Door & window fitting','Custom shelving','Skirting & architrave','Fencing & gates','General repairs'],
+  Tiling:      ['Floor tiling','Wall tiling','Bathroom renovations','Outdoor tiling','Grout & repairs','Waterproofing']
+};
+
+function loadDemo() {
+  document.querySelectorAll('.trade-card').forEach(c => {
+    if (c.querySelector('.trade-name').textContent === 'Fencing') c.classList.add('selected');
+  });
+  state.trade = 'Fencing';
+  document.getElementById('btn1').disabled = false;
+  document.getElementById('demoBanner').style.display = 'block';
+  goTo(2);
+  setTimeout(() => {
+    document.getElementById('bizName').value = "Pete's Fencing Co";
+    document.getElementById('suburb').value = 'Rockingham';
+    document.getElementById('phone').value = '0412 333 444';
+    document.getElementById('email').value = 'pete@example.com';
+    validateStep2();
+  }, 100);
+}
+
+function clearDemo() {
+  document.getElementById('demoBanner').style.display = 'none';
+  document.querySelectorAll('.trade-card').forEach(c => c.classList.remove('selected'));
+  state.trade = '';
+  ['bizName','suburb','phone','email'].forEach(id => document.getElementById(id).value = '');
+  state.services = [];
+  goTo(1);
+}
+
+function selectTrade(el, trade) {
+  document.querySelectorAll('.trade-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.trade = trade;
+  document.getElementById('otherTradeField').style.display = 'none';
+  document.getElementById('btn1').disabled = false;
+}
+
+function selectOtherTrade(el) {
+  document.querySelectorAll('.trade-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.trade = '';
+  document.getElementById('otherTradeField').style.display = 'block';
+  document.getElementById('otherTradeName').focus();
+  document.getElementById('btn1').disabled = true;
+}
+
+function validateOtherTrade() {
+  const val = document.getElementById('otherTradeName').value.trim();
+  if (val) {
+    state.trade = val;
+    document.getElementById('btn1').disabled = false;
+  } else {
+    state.trade = '';
+    document.getElementById('btn1').disabled = true;
+  }
+}
+
+function validateStep2() {
+  const name = document.getElementById('bizName').value.trim();
+  const suburb = document.getElementById('suburb').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById('emailError').style.display = email && !emailValid ? 'block' : 'none';
+  document.getElementById('btn2').disabled = !(name && suburb && emailValid);
+}
+
+function buildServicesGrid(trade) {
+  const grid = document.getElementById('servicesGrid');
+  const genericServices = ['Free quotes','Residential work','Commercial work','Emergency callouts','Repairs & maintenance','New installations'];
+  const services = tradeServices[trade] || genericServices;
+  const isDemo = document.getElementById('demoBanner').style.display !== 'none';
+  const demoServices = ['Colorbond fencing','Timber fencing','Pool fencing','Gate installation'];
+  state.services = [];
+  grid.innerHTML = services.map(s => {
+    const pre = isDemo && demoServices.includes(s);
+    if (pre) state.services.push(s);
+    return `<div class="service-chip${pre?' selected':''}" onclick="toggleService(this,'${s}')">
+      <span class="chip-icon">✦</span><span>${s}</span><span class="chip-check">✓</span></div>`;
+  }).join('');
+  validateStep3();
+}
+
+function toggleService(el, service) {
+  el.classList.toggle('selected');
+  state.services = el.classList.contains('selected')
+    ? [...state.services, service]
+    : state.services.filter(s => s !== service);
+  validateStep3();
+}
+
+function validateStep3() {
+  const custom = document.getElementById('customService').value.trim();
+  document.getElementById('btn3').disabled = !(state.services.length > 0 || custom.length > 0);
+}
+
+function buildPreview() {
+  const custom = document.getElementById('customService').value.trim();
+  const allServices = [...state.services];
+  if (custom) allServices.push(custom);
+  const svcCards = allServices.slice(0, 4);
+
+  previewData = [];
+  previewData.push({ tag:`01 / ${state.bizName.toUpperCase()}`, tagColor:tagColors[0], heroClass:heroColors[0], headline:`<em>${state.suburb}'s</em> trusted ${state.trade.toLowerCase()} crew`, summary:`${state.bizName} — serving ${state.suburb} and surrounding Perth suburbs.`, iBtn:`About ${state.bizName}`, isForm:false });
+  svcCards.forEach((s, i) => {
+    const words = s.split(' ');
+    previewData.push({ tag:`0${i+2} / SERVICE`, tagColor:tagColors[i+1], heroClass:heroColors[i+1], headline:`<em>${words[0]}</em> ${words.slice(1).join(' ')}`, summary:`Professional ${s.toLowerCase()} in ${state.suburb} and across Perth.`, iBtn:`About ${s}`, isForm:false });
+  });
+  previewData.push({ tag:'GET A QUOTE', tagColor:tagColors[0], heroClass:heroColors[0], headline:`Get your free <em>quote</em> today`, summary:`We'll come to you anywhere in ${state.suburb} — free measure, no obligation.`, iBtn:null, isForm:true });
+
+  previewIndex = 0;
+
+  // Build progress segments
+  document.getElementById('previewProgress').innerHTML = previewData.map((_,i) =>
+    `<div class="preview-seg${i===0?' active':''}" id="pseg${i}"></div>`).join('');
+
+  renderPreviewCard();
+}
+
+function renderPreviewCard() {
+  const c = previewData[previewIndex];
+  const ibtn = c.iBtn ? `<div class="preview-ibtn"><span class="preview-dot">i</span> ℹ️ ${c.iBtn}</div>` : '';
+  const form = c.isForm ? `<div style="display:flex;flex-direction:column;gap:7px;margin-top:8px;">
+    <div style="font-size:11px;color:#f59e0b;font-weight:600;margin-bottom:4px;">🔒 Preview only — your real widget has live fields</div>
+    <div style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);border-radius:8px;color:#555;font-size:12px;">Your name</div>
+    <div style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);border-radius:8px;color:#555;font-size:12px;">Phone number</div>
+    <div style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);border-radius:8px;color:#555;font-size:12px;">Email address</div>
+    <div style="width:100%;padding:10px;background:#f59e0b;border-radius:8px;color:#000;font-size:13px;font-weight:700;text-align:center;">Get a Quote →</div>
+  </div>` : '';
+
+  document.getElementById('previewCardContainer').innerHTML = `
+    <div class="preview-hero ${c.heroClass}">
+      <div class="preview-tag" style="color:${c.tagColor}">${c.tag}</div>
+      <div class="preview-headline">${c.headline}</div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-summary">${c.summary}</div>
+      ${ibtn}${form}
+    </div>`;
+
+  document.getElementById('previewCounter').textContent = `${previewIndex+1} / ${previewData.length}`;
+  previewData.forEach((_,i) => {
+    const seg = document.getElementById('pseg'+i);
+    if (!seg) return;
+    seg.classList.remove('active','viewed');
+    if (i === previewIndex) seg.classList.add('active');
+    else if (i < previewIndex) seg.classList.add('viewed');
+  });
+}
+
+function previewNav(dir) {
+  const next = previewIndex + dir;
+  if (next >= 0 && next < previewData.length) { previewIndex = next; renderPreviewCard(); }
+}
+
+function goTo(step) {
+  if (step > 2) {
+    state.bizName = document.getElementById('bizName').value.trim();
+    state.suburb = document.getElementById('suburb').value.trim();
+    state.phone = document.getElementById('phone').value.trim();
+    state.email = document.getElementById('email').value.trim();
+    state.website = document.getElementById('website').value.trim();
+    state.whatsapp = document.getElementById('whatsapp').value.trim();
+    state.facebook = document.getElementById('facebook').value.trim();
+    state.instagram = document.getElementById('instagram').value.trim();
+  }
+  if (step === 3) buildServicesGrid(state.trade);
+  if (step === 4) buildPreview();
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step'+step).classList.add('active');
+  const fills = {1:'20%',2:'40%',3:'60%',4:'80%',5:'100%'};
+  document.getElementById('progressFill').style.width = fills[step]||'100%';
+  ['ps1','ps2','ps3','ps4','ps5'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('active','done');
+    if (i+1===step) el.classList.add('active');
+    else if (i+1<step) el.classList.add('done');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function submitForm() {
+  const custom = document.getElementById('customService').value.trim();
+  const allServices = [...state.services];
+  if (custom) allServices.push(custom);
+  const brief = `iTabs Widget Brief\n==================\nBusiness: ${state.bizName}\nTrade: ${state.trade}\nSuburb: ${state.suburb} Perth WA\nPhone: ${state.phone||'Not provided'}\nEmail: ${state.email}\nServices: ${allServices.join(', ')}`;
+  try {
+    const fd = new FormData();
+    fd.append('access_key','99a11c15-5c61-4765-99c5-673adec64b16');
+    fd.append('subject',`iTabs Widget Brief — ${state.bizName}`);
+    fd.append('from_name',state.bizName);
+    fd.append('to','build@itabs.ai');
+    fd.append('replyto',state.email);
+    fd.append('message',brief);
+    await fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
+  } catch(e){console.error(e);}
+  goTo(5);
 }
 </script>
 </body>
