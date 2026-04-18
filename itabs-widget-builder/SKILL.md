@@ -1,6 +1,6 @@
 ---
 name: itabs-widget-builder
-description: 'Build interactive iTabs swipeable card widgets — mobile-first HTML files with contextual i-buttons. Use this skill whenever the user wants to create an iTabs, a swipeable summary, an embeddable quote estimator widget, a prep guide, an event summary, a video summary card deck, a tradie onboarding widget, or any interactive card-based content display. Trigger on phrases like build an iTabs, make a widget, create a card deck, swipeable summary, quote estimator, or any request to package content into an interactive shareable HTML format. Always use this skill when building for tradies, Perth businesses, or the iTabs platform.'
+description: 'Build interactive iTabs swipeable card widgets - mobile-first HTML files with contextual i-buttons. Use this skill whenever the user wants to create an iTabs, a swipeable summary, an embeddable quote estimator widget, a prep guide, an event summary, a video summary card deck, a tradie onboarding widget, or any interactive card-based content display. Trigger on phrases like build an iTabs, make a widget, create a card deck, swipeable summary, quote estimator, or any request to package content into an interactive shareable HTML format. Always use this skill when building for tradies, Perth businesses, or the iTabs platform.'
 iTabs Widget Builder
 Build interactive, mobile-first swipeable card widgets — single self-contained HTML files for testing in Val.town or delivery to tradies. These are the core output format of the iTabs platform.
 What Is an iTabs Widget
