@@ -1,39 +1,26 @@
 ---
 name: itabs-widget-builder
 description: Build interactive iTabs swipeable card widgets — mobile-first HTML files with contextual "i" buttons. Use this skill whenever the user wants to create an iTabs, a swipeable summary, an embeddable quote estimator widget, a prep guide, an event summary, a video summary card deck, a tradie onboarding widget, or any interactive card-based content display. Trigger on phrases like "build an iTabs", "make a widget", "create a card deck", "swipeable summary", "quote estimator", or any request to package content into an interactive, shareable HTML format. Always use this skill when building for tradies, Perth businesses, or the iTabs platform.
----
-
-# iTabs Widget Builder
-
+iTabs Widget Builder
 Build interactive, mobile-first swipeable card widgets — single self-contained HTML files for testing in Val.town or delivery to tradies. These are the core output format of the iTabs platform.
-
-## What Is an iTabs Widget
-
+What Is an iTabs Widget
 An iTabs widget is a swipeable card deck — like Instagram Stories but for a tradie's business. Each card has:
-
-- A **business header bar** — name, location, and a persistent Contact button (always visible)
-- A **hero section** — tag, headline, colour theme, optional photo background
-- A **body section** — summary text, optional analogy box, i-buttons
-- A **contact sheet** — slides up from Contact button: Call, WhatsApp, Email, Save Contact
-
+A business header bar — name, location, and a persistent Contact button (always visible)
+A hero section — tag, headline, colour theme, optional photo background
+A body section — summary text, optional analogy box, i-buttons
+A contact sheet — slides up from Contact button: Call, WhatsApp, Email, Save Contact
 Key properties:
-
-- Single HTML file, zero server dependencies
-- Mobile-first (max-width 430px, full viewport height)
-- Dark theme by default
-- Swipe / tap / keyboard navigation
-- Progress bar at top tracks position
-- 7 cards standard for tradie widgets
-- Val.town compatible — NO backtick template literals anywhere in JS
-
+Single HTML file, zero server dependencies
+Mobile-first (max-width 430px, full viewport height)
+Dark theme by default
+Swipe / tap / keyboard navigation
+Progress bar at top tracks position
+7 cards standard for tradie widgets
+Val.town compatible — NO backtick template literals anywhere in JS
 ---
-
-## ⚠️ Val.town Compatibility — Critical Rule
-
+⚠️ Val.town Compatibility — Critical Rule
 Val.town parses the entire HTML file as TypeScript/Deno. Any backtick template literals in the JavaScript will cause a parse error.
-
-**NEVER use backticks in JS. ALWAYS use string concatenation.**
-
+NEVER use backticks in JS. ALWAYS use string concatenation.
 ```javascript
 // WRONG — breaks Val.town
 document.getElementById('counter').textContent = `${index + 1} / ${totalCards}`;
@@ -47,42 +34,29 @@ el.innerHTML = `<div class="${card.heroClass}">`;
 // CORRECT
 el.innerHTML = '<div class="' + card.heroClass + '">';
 ```
-
 This applies to every string in the script block — no exceptions.
-
 ---
-
-## Widget Types
-
-| Type | Use case | Card count |
-|------|----------|------------|
-| `tradie-profile` | Tradie business card — who they are, what they do, contact | 7 |
-| `video-summary` | YouTube / podcast key points | 5–10 |
-| `quote-estimator` | Tradie pricing widget with lead capture | 4–8 |
-| `prep-guide` | Event / meetup / course preparation | 4–8 |
-| `explainer` | Concept breakdown for a topic | 4–8 |
-| `substack` | Blog post / article summary card deck | 4–6 |
-
+Widget Types
+Type	Use case	Card count
+`tradie-profile`	Tradie business card — who they are, what they do, contact	7
+`video-summary`	YouTube / podcast key points	5–10
+`quote-estimator`	Tradie pricing widget with lead capture	4–8
+`prep-guide`	Event / meetup / course preparation	4–8
+`explainer`	Concept breakdown for a topic	4–8
+`substack`	Blog post / article summary card deck	4–6
 ---
-
-## Tradie Widget Structure (7 cards)
-
-| Card | Tag | Content |
-|------|-----|---------|
-| 1 | WHO WE ARE | Business intro, years experience, location |
-| 2 | WHAT WE DO | Core service / specialty |
-| 3 | OUR WORK | Photos i-button, results, before/after |
-| 4 | WHY CHOOSE US | Differentiators — licensed, insured, guarantee |
-| 5 | HOW IT WORKS | Simple 3-step process |
-| 6 | PRICING | Honest pricing, no call out fee, free quote etc |
-| 7 | GET IN TOUCH | Lead form (Web3Forms) + contact buttons |
-
+Tradie Widget Structure (7 cards)
+Card	Tag	Content
+1	WHO WE ARE	Business intro, years experience, location
+2	WHAT WE DO	Core service / specialty
+3	OUR WORK	Photos i-button, results, before/after
+4	WHY CHOOSE US	Differentiators — licensed, insured, guarantee
+5	HOW IT WORKS	Simple 3-step process
+6	PRICING	Honest pricing, no call out fee, free quote etc
+7	GET IN TOUCH	Lead form (Web3Forms) + contact buttons
 ---
-
-## Design System (Never Deviate)
-
-### CSS Variables
-
+Design System (Never Deviate)
+CSS Variables
 ```css
 :root {
   --bg-primary: #0a0a0f;
@@ -97,28 +71,19 @@ This applies to every string in the script block — no exceptions.
   --transition: 0.2s ease;
 }
 ```
-
-### Hero Theme Table
-
-| Theme class | Use for |
-|-------------|---------|
-| `hero-default` | Intro / problem cards |
-| `hero-purple` | Core concept / foundational |
-| `hero-cyan` | Mechanics / plumbing / water trades |
-| `hero-amber` | Use cases / benefits / construction |
-| `hero-green` | Action / CTA / lawn / garden trades |
-| `hero-red` | Warning / problem / urgency |
-
-### Em Highlight Rule
-
+Hero Theme Table
+Theme class	Use for
+`hero-default`	Intro / problem cards
+`hero-purple`	Core concept / foundational
+`hero-cyan`	Mechanics / plumbing / water trades
+`hero-amber`	Use cases / benefits / construction
+`hero-green`	Action / CTA / lawn / garden trades
+`hero-red`	Warning / problem / urgency
+Em Highlight Rule
 One `<em>` per headline only. Em colour matches the hero theme. `font-style: normal` always.
-
 ---
-
-## Business Header Bar
-
+Business Header Bar
 Every tradie widget has a fixed header bar above the progress bar with the business name, location, and a Contact pill button. The Contact button opens the contact sheet.
-
 ```html
 <div class="biz-header">
   <div class="biz-info">
@@ -128,22 +93,16 @@ Every tradie widget has a fixed header bar above the progress bar with the busin
   <button class="contact-pill" id="contactBtn">💬 Contact</button>
 </div>
 ```
-
 ```css
 .biz-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--bg-secondary); border-bottom: 1px solid rgba(255,255,255,0.06); position: relative; z-index: 90; }
 .biz-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
 .biz-location { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
 .contact-pill { padding: 7px 14px; background: var(--accent); border: none; border-radius: 99px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
 ```
-
 ---
-
-## Contact Sheet
-
+Contact Sheet
 Slides up from the bottom when Contact button is tapped. Four actions: Call, WhatsApp, Email, Save Contact.
-
 Save Contact generates a `.vcf` vCard download — tradie stays in phone contacts forever.
-
 ```html
 <div class="contact-overlay" id="contactOverlay" onclick="if(event.target===this)closeContact()">
   <div class="contact-sheet">
@@ -174,7 +133,6 @@ Save Contact generates a `.vcf` vCard download — tradie stays in phone contact
   </div>
 </div>
 ```
-
 ```css
 .contact-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
 .contact-overlay.active { opacity: 1; pointer-events: all; }
@@ -187,7 +145,6 @@ Save Contact generates a `.vcf` vCard download — tradie stays in phone contact
 .ca-label { font-size: 14px; font-weight: 600; flex: 1; }
 .ca-detail { font-size: 12px; color: var(--text-secondary); }
 ```
-
 ```javascript
 function saveContact() {
   var vcard = 'BEGIN:VCARD\nVERSION:3.0\nFN:City Metro Plumbing & Gas\nTEL:0433350646\nEMAIL:info@citymetroplumbing.com.au\nURL:https://citymetroplumbingandgas.com.au\nEND:VCARD';
@@ -202,13 +159,9 @@ function saveContact() {
 function openContact() { document.getElementById('contactOverlay').classList.add('active'); }
 function closeContact() { document.getElementById('contactOverlay').classList.remove('active'); }
 ```
-
 ---
-
-## Photo Hero Support
-
+Photo Hero Support
 Cards can have a real photo as hero background instead of a gradient. Add `photoUrl`, `photoSize`, `photoPos` to the card object.
-
 ```javascript
 {
   tag: "01 / OUR WORK",
@@ -219,9 +172,7 @@ Cards can have a real photo as hero background instead of a gradient. Add `photo
   ...
 }
 ```
-
 In `buildCard`, apply the photo if present:
-
 ```javascript
 if (card.photoUrl) {
   heroEl.style.backgroundImage = 'url(' + card.photoUrl + ')';
@@ -229,17 +180,13 @@ if (card.photoUrl) {
   heroEl.style.backgroundPosition = card.photoPos || 'center center';
 }
 ```
-
-**Photo URL tips:**
-- Imgur: upload → right-click image → copy image address ✅
-- Dropbox: share link → change `dl=0` to `dl=1` ✅
-- Google Photos: does NOT work as direct URL ❌
-- Own website: right-click photo → copy image address ✅
-
+Photo URL tips:
+Imgur: upload → right-click image → copy image address ✅
+Dropbox: share link → change `dl=0` to `dl=1` ✅
+Google Photos: does NOT work as direct URL ❌
+Own website: right-click photo → copy image address ✅
 ---
-
-## Card Data Structure
-
+Card Data Structure
 ```javascript
 const cards = [
   {
@@ -261,26 +208,20 @@ const cards = [
   }
 ];
 ```
-
 ---
-
-## What NOT to Do
-
-- Never add CSS animations or transitions beyond what's in the template
-- Never change the font family
-- Never add a visible edit button or admin link on the public widget
-- Never use backtick template literals anywhere in the script block
-- Never use `onclick=` on nav buttons or i-buttons — always `addEventListener`
-- Never skip `encodeURIComponent` on i-button content
-- Never use Google Photos URLs — they don't work as direct image sources
-- Never make the contact button float — it lives in the header bar, always
-- Never put more than one `<em>` in a headline
-- Never use lorem ipsum — every word must be real business content
-
+What NOT to Do
+Never add CSS animations or transitions beyond what's in the template
+Never change the font family
+Never add a visible edit button or admin link on the public widget
+Never use backtick template literals anywhere in the script block
+Never use `onclick=` on nav buttons or i-buttons — always `addEventListener`
+Never skip `encodeURIComponent` on i-button content
+Never use Google Photos URLs — they don't work as direct image sources
+Never make the contact button float — it lives in the header bar, always
+Never put more than one `<em>` in a headline
+Never use lorem ipsum — every word must be real business content
 ---
-
-## Full HTML Template
-
+Full HTML Template
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -574,23 +515,17 @@ init();
 </body>
 </html>
 ```
-
 ---
-
-## Output Rules
-
-- Always produce a single self-contained HTML file
-- Save to `/mnt/user-data/outputs/itabs-[slug].html`
-- Present with `present_files`
-- No backtick template literals anywhere in the script block
-- Always use `addEventListener` — never `onclick=` on nav or i-buttons
-- Always `encodeURIComponent` on i-button content
-
-## Tradie Lead Form (Card 7)
-
+Output Rules
+Always produce a single self-contained HTML file
+Save to `/mnt/user-data/outputs/itabs-[slug].html`
+Present with `present_files`
+No backtick template literals anywhere in the script block
+Always use `addEventListener` — never `onclick=` on nav or i-buttons
+Always `encodeURIComponent` on i-button content
+Tradie Lead Form (Card 7)
 Last card gets a Web3Forms lead capture form:
-
-- Access key: `99a11c15-5c61-4765-99c5-673adec64b16`
-- Leads route to: `responses@itabs.ai`
-- Required fields: Name, Phone, Service needed
-- Optional: Email, Job details
+Access key: `99a11c15-5c61-4765-99c5-673adec64b16`
+Leads route to: `responses@itabs.ai`
+Required fields: Name, Phone, Service needed
+Optional: Email, Job details
