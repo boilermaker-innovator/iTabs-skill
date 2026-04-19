@@ -354,15 +354,15 @@ const cards = [
         .card.active { opacity: 1; transform: translateX(0); pointer-events: all; }
         .card.prev { opacity: 0; transform: translateX(-100%); }
 
-        /* Cover card — card 1 full bleed */
-        .card-cover { position: absolute; inset: 0; background-size: cover; background-position: center center; background-color: #1a2a1a; }
-        .card-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.15) 100%); }
-        .card-cover-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 20px; z-index: 2; }
-        .cover-name { font-size: 24px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 6px; }
-        .cover-tagline { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 14px; }
+        /* Cover card — card 1 image above text */
+        .card-cover { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg-secondary); }
+        .card-cover-image { flex: 1; background-size: contain; background-repeat: no-repeat; background-position: center center; background-color: #0d0d14; min-height: 0; }
+        .card-cover-content { padding: 20px; background: var(--bg-secondary); border-top: 1px solid rgba(255,255,255,0.08); }
+        .cover-name { font-size: 22px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 4px; }
+        .cover-tagline { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 12px; }
         .cover-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .cover-tag { padding: 5px 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 99px; font-size: 12px; font-weight: 600; color: #fff; }
-        .swipe-hint { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.1em; text-transform: uppercase; z-index: 2; }
+        .cover-tag { padding: 5px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 99px; font-size: 12px; font-weight: 600; color: #fff; }
+        .swipe-hint { text-align: center; font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 0 2px; background: var(--bg-secondary); }
 
         .card-hero { padding: 20px; min-height: 36%; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
         .card-hero.hero-large { min-height: 42%; }
