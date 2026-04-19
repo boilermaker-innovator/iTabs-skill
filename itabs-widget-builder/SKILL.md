@@ -67,15 +67,39 @@ This applies to every string in the script block — no exceptions.
 
 ## Tradie Widget Structure (7 cards)
 
-| Card | Tag | Content |
-|------|-----|---------|
-| 1 | WHO WE ARE | Business intro, years experience, location |
-| 2 | WHAT WE DO | Core service / specialty |
-| 3 | OUR WORK | Photos i-button, results, before/after |
-| 4 | WHY CHOOSE US | Differentiators — licensed, insured, guarantee |
-| 5 | HOW IT WORKS | Simple 3-step process |
-| 6 | PRICING | Honest pricing, no call out fee, free quote etc |
-| 7 | GET IN TOUCH | Lead form (Web3Forms) + contact buttons |
+| Card | Type | Content |
+|------|------|---------|
+| 1 | COVER | Full bleed photo, business name, tagline, service tags, swipe hint — NO body section |
+| 2 | Content | Who they are, location, credentials |
+| 3 | Content | Core service / specialty |
+| 4 | Content | Second service or differentiator |
+| 5 | Content | Why choose them / guarantee |
+| 6 | Content | Pricing / free quotes / discounts |
+| 7 | LEAD FORM | Name, phone, job description, photo upload |
+
+### Card 1 — Cover Card Rules
+- Full bleed photo fills the entire card — no hero/body split
+- Business name: large, bold, white, bottom of card
+- Tagline: one line, muted white, under the name
+- Service tags: 3-4 rounded pill labels showing key services
+- "swipe to see more" hint at very bottom
+- NO i-buttons on card 1
+- Dark gradient overlay from bottom so text is always readable
+- If no photo available — use a strong colour gradient as background
+
+### Cards 2-6 — Content Card Rules
+- Standard hero + body split
+- i-buttons on inner cards where they add genuine value
+- Keep body copy short — 2-3 sentences max
+- No i-buttons just for the sake of it
+
+### Card 7 — Lead Form Rules
+- Name field
+- Phone field
+- Job description field with Photo tip i-button
+- Multiple photo upload field (optional)
+- Submit button
+- Uses Web3Forms with FormData (not JSON) to support file attachments
 
 ---
 
@@ -240,6 +264,18 @@ if (card.photoUrl) {
 
 ## Card Data Structure
 
+### Card 1 — Cover Card
+```javascript
+{
+    type: 'cover',
+    photoUrl: 'https://i.imgur.com/xxxxxxx.jpg',
+    name: 'Business Name',
+    tagline: 'One line tagline here',
+    tags: ['Service 1', 'Service 2', 'Service 3', 'Service 4']
+}
+```
+
+### Cards 2-6 — Content Cards
 ```javascript
 const cards = [
   {
@@ -317,6 +353,16 @@ const cards = [
         .card { position: absolute; inset: 0; display: flex; flex-direction: column; opacity: 0; transform: translateX(100%); transition: all 0.3s ease; pointer-events: none; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; }
         .card.active { opacity: 1; transform: translateX(0); pointer-events: all; }
         .card.prev { opacity: 0; transform: translateX(-100%); }
+
+        /* Cover card — card 1 full bleed */
+        .card-cover { position: absolute; inset: 0; background-size: cover; background-position: center center; background-color: #1a2a1a; }
+        .card-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.15) 100%); }
+        .card-cover-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 20px; z-index: 2; }
+        .cover-name { font-size: 24px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 6px; }
+        .cover-tagline { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 14px; }
+        .cover-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .cover-tag { padding: 5px 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 99px; font-size: 12px; font-weight: 600; color: #fff; }
+        .swipe-hint { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.1em; text-transform: uppercase; z-index: 2; }
 
         .card-hero { padding: 20px; min-height: 36%; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
         .card-hero.hero-large { min-height: 42%; }
