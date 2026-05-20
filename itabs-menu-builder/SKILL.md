@@ -1,11 +1,11 @@
 ---
 name: itabs-menu-builder
-description: 'Build interactive iTabs ordering menus — mobile-first scrollable HTML ordering apps for cafes, restaurants, and events. Use this skill whenever the user wants to: build a menu for a cafe or restaurant, create an event ordering page, build a coffee ordering widget, make a digital menu with a cart, or deploy a menu for a hospitality venue. Trigger on phrases like "build a menu for", "ordering page", "digital menu", "cafe menu", "restaurant menu", "event menu", or any request to create a scrollable menu with cart/ordering functionality. This is different from the iTabs widget builder — menus scroll, card decks swipe.'
+description: 'Build interactive iTabs ordering menus — mobile-first scrollable HTML ordering apps for cafes, restaurants, food hall stalls, and events. Use this skill whenever the user wants to: build a menu for a cafe or restaurant, create an event ordering page, build a coffee ordering widget, make a digital menu with a cart, build a menu for a food hall stall or market vendor, or deploy a menu for a hospitality venue. Trigger on phrases like "build a menu for", "ordering page", "digital menu", "cafe menu", "restaurant menu", "event menu", "food hall", "market stall menu", or any request to create a scrollable menu with cart/ordering functionality. This is different from the iTabs widget builder — menus scroll, card decks swipe.'
 ---
 
 # iTabs Menu Builder
 
-Build mobile-first scrollable ordering menus — single self-contained HTML files for cafes, restaurants, and events. These are NOT swipeable card decks. They scroll like a real menu app.
+Build mobile-first scrollable ordering menus — single self-contained HTML files for cafes, restaurants, food hall stalls, and events. These are NOT swipeable card decks. They scroll like a real menu app.
 
 ## What Is an iTabs Menu
 
@@ -15,7 +15,7 @@ A scrollable ordering app with:
 - Menu sections — categories with item cards
 - Cart bar — fixed at bottom, shows count + total + Order button
 - Order confirmation — bottom sheet with summary
-- Optional: size picker modal, extras chips, loyalty table, sponsor layer
+- Optional: size picker modal, extras chips, loyalty table, sponsor layer, PIN editor
 
 Single HTML file. Zero server dependencies. Mobile-first (max-width 600px). Dark theme.
 
@@ -31,23 +31,99 @@ Single HTML file. Zero server dependencies. Mobile-first (max-width 600px). Dark
 - Reference build: Morning Startup x Purpose Ventures x Joey Zaza's
 
 ### Mode 2 — Venue Deployment (Full)
-**Use for:** permanent cafe or restaurant deployment
-- Venue branding only
-- PIN-protected self-serve editor so owner updates prices/items
-- Multi-language toggle (if needed)
+**Use for:** permanent venue deployment — cafes, restaurants, food hall stalls
+- Venue branding only, no sponsor layer
+- PIN-protected self-serve editor so owner updates prices/items themselves
+- Menu data stored in JS array at top of file — easy for Townie to update
 - Categories: full food + drinks menu
-- Reference build: Firewood Cafe, Willetton
+- Show-screen-at-counter order flow (same as Mode 1)
+- Reference builds: Firewood Cafe Willetton, food hall stalls
+
+---
+
+## Food Hall Stall Strategy
+
+Each stall gets their own individual menu — one HTML file, one URL, one vendor.
+
+**Why individual not combined:**
+- Sales pitch is "here's YOUR menu, live right now" — personal hook
+- One yes → they show neighbours → spreads through the hall organically
+- Simpler to build, simpler to hand over, simpler to update
+
+**Sales approach:**
+- Build a live demo for one stall before approaching them
+- Show it on your phone at the counter — no explanation needed
+- PIN editor means they can update it themselves — no ongoing dependency on Jon
+
+**Deployment:**
+- Each stall gets its own Val.town val or GitHub Pages URL
+- URL format: `itabs.ai/[stall-name]` or `[stall-name].itabs.ai` (future)
+- For now: Val.town URL shared via QR code printed and taped to counter
+
+---
+
+## PIN-Protected Editor (Mode 2)
+
+The self-serve editor is the key feature that makes this a product, not a service.
+
+### How it works
+- Hidden edit button in footer (small, subtle — not obvious to customers)
+- Tap edit → PIN prompt appears
+- Enter 4-digit PIN → editor mode unlocks
+- Owner can update: item names, prices, descriptions, add/remove items
+- Save → changes reflect immediately on the live menu
+- Wrong PIN → silent fail, stays in customer view
+
+### PIN Editor UI
+```
+[ Edit Menu ] ← small link in footer, e.g. "itabs · edit"
+
+PIN modal:
+  "Owner access"
+  [_ _ _ _]  ← 4 digit input
+  [Unlock]
+
+Editor panel (slides up after correct PIN):
+  For each item:
+    [Item name input] [$price input] [Remove ×]
+  [+ Add item]
+  [Save changes]  [Cancel]
+```
+
+### Data Storage
+Menu data lives in a JS array at the top of the file. Editor reads and rewrites this array via blob storage (Val.town) or localStorage (standalone HTML).
+
+**Val.town deployment — use blob storage:**
+```javascript
+// On load: fetch menu from blob
+// On save: write updated menu to blob
+// Key format: 'menu-[venue-slug]'
+```
+
+**Standalone HTML — use localStorage:**
+```javascript
+// On load: check localStorage for saved menu, fall back to default
+const saved = localStorage.getItem('menu-[venue-slug]');
+const menuData = saved ? JSON.parse(saved) : defaultMenu;
+
+// On save:
+localStorage.setItem('menu-[venue-slug]', JSON.stringify(updatedMenu));
+```
+
+### Default PIN
+Last 4 digits of venue phone number. Tell the owner this when handing over.
 
 ---
 
 ## Questions to Ask Before Building
 
-1. **Venue name?** (and sponsor name if event)
-2. **Menu items?** List categories + items + prices
-3. **Size options?** (coffee needs XS/S/M/L — food usually no)
-4. **Extras/modifiers?** (alt milk, syrups, etc.)
-5. **Simple or Full?** (event one-off vs permanent venue deployment)
-6. **Colour theme?** (default is amber #f5c400 — can customise)
+1. **Venue name and suburb?**
+2. **Mode?** Event (simple) or permanent venue (full with PIN editor)
+3. **Menu items?** Categories + items + prices
+4. **Size options?** Coffee = yes (XS/S/M/L). Food = no.
+5. **Extras?** Alt milk, syrups, add-ons
+6. **Colour theme?** (default amber)
+7. **PIN?** Last 4 of phone, or specify
 
 ---
 
@@ -70,11 +146,12 @@ Single HTML file. Zero server dependencies. Mobile-first (max-width 600px). Dark
 ### Colour Themes by Venue Type
 | Theme | Accent colour | Use for |
 |-------|--------------|---------|
-| Amber (default) | #f5c400 | Coffee, general cafe |
+| Amber (default) | #f5c400 | Coffee, general cafe, food halls |
 | Purple-Pink gradient | #8b5cf6 → #ec4899 | Startup events, creative venues |
-| Green | #22c55e | Health food, vegan cafes |
+| Green | #22c55e | Health food, vegan, salads |
 | Red | #ef4444 | Pizza, burgers, casual dining |
-| Teal | #06b6d4 | Modern restaurants, seafood |
+| Teal | #06b6d4 | Modern restaurants, seafood, Asian |
+| Orange | #f97316 | BBQ, Mexican, bold street food |
 
 ---
 
@@ -82,7 +159,7 @@ Single HTML file. Zero server dependencies. Mobile-first (max-width 600px). Dark
 
 ```
 STICKY HEADER
-  └─ Brand name + subtitle
+  └─ Brand name + subtitle (e.g. "Willetton Food Hall")
   └─ Connect button (opens bottom sheet with links)
 
 WELCOME BANNER
@@ -92,14 +169,13 @@ WELCOME BANNER
 
 CONTAINER (max-width: 600px, centered)
   └─ SECTION: Category name
-      └─ Sub-heading (optional, e.g. "Hot Drinks")
-      └─ ITEM CARDs (repeat)
+      └─ ITEM CARDs (repeat per category)
   └─ SECTION: Extras (optional)
       └─ Chip toggles
   └─ SECTION: Loyalty (optional)
       └─ Points table rows
   └─ SECTION: External link button (optional)
-  └─ FOOTER: "Powered by iTabs · itabs.ai"
+  └─ FOOTER: "Powered by iTabs · itabs.ai · edit" (edit link for Mode 2)
 
 CART BAR (fixed bottom, hidden until items added)
   └─ Item count + total + Order button
@@ -109,6 +185,8 @@ OVERLAYS
   └─ Size picker modal (if sizes needed)
   └─ Order confirmation bottom sheet
   └─ Order placed popup
+  └─ PIN modal (Mode 2 only)
+  └─ Editor panel (Mode 2 only)
 ```
 
 ---
@@ -118,24 +196,25 @@ OVERLAYS
 ```html
 <div class="drink-card">
   <div class="drink-info">
-    <div class="drink-name">Flat White</div>
-    <div class="drink-price">from $5.50</div>
+    <div class="drink-name">Pad Thai</div>
+    <div class="drink-desc">Rice noodles, egg, bean sprouts, peanuts</div>
+    <div class="drink-price">$16.00</div>
   </div>
   <div class="quantity-selector">
-    <button class="qty-btn" onclick="decrementDrink('Flat White')">−</button>
-    <div class="qty-display" id="qty-Flat White">0</div>
-    <button class="qty-btn" onclick="openSizeModal('Flat White', false)">+</button>
+    <button class="qty-btn" onclick="decrement('Pad Thai')">−</button>
+    <div class="qty-display" id="qty-Pad-Thai">0</div>
+    <button class="qty-btn" onclick="increment('Pad Thai')">+</button>
   </div>
 </div>
 ```
 
-If no size picker needed, replace openSizeModal with addDrink directly.
+Note: spaces in item names → replace with hyphens in IDs.
 
 ---
 
 ## Size Picker Modal
 
-Used when items have size variants (coffee: XS/S/M/L).
+Used when items have size variants (coffee only — food menus skip this).
 
 ```javascript
 const sizes = {
@@ -146,16 +225,14 @@ const sizes = {
 };
 ```
 
-- Tapping + on a drink opens the modal
-- User picks size → item added to cart
-- smallSizesOnly flag: true = show XS/S only (for Piccolo, Espresso)
+- smallSizesOnly: true = show XS/S only (Piccolo, Espresso)
 - Modal closes after selection
 
 ---
 
 ## Extras Chips
 
-Toggleable add-ons. Click selects/deselects. Selected state: accent colour fill.
+Toggleable add-ons. Selected state: accent colour fill.
 
 ```html
 <div class="extra-chip" onclick="toggleExtra(this, 'Alt Milk', 0.70)">
@@ -163,22 +240,19 @@ Toggleable add-ons. Click selects/deselects. Selected state: accent colour fill.
 </div>
 ```
 
-Extras price adds to cart total when selected.
+Extras are global (whole order), not per-item — simpler UX.
 
 ---
 
 ## Cart Bar
 
-Hidden until at least 1 item added. Shows:
-- Item count (e.g. "2 items")
-- Running total (e.g. "$11.00")
-- Order → button → opens order confirmation bottom sheet
+Hidden until at least 1 item added.
 
 ```javascript
 function updateCart() {
-  // count items, sum prices
-  // if totalItems > 0: show cart bar
-  // else: hide cart bar
+  // recalculate from scratch — never increment manually
+  // if totalItems > 0: cartBar.classList.add('active')
+  // else: cartBar.classList.remove('active')
 }
 ```
 
@@ -186,28 +260,28 @@ function updateCart() {
 
 ## Order Confirmation Flow
 
-1. User taps "Order →" in cart bar
-2. Bottom sheet slides up with order summary (items + sizes + total)
-3. "Pay at the counter and show this screen" note
-4. CTA button (e.g. "Thanks Purpose Ventures!") → triggers popup
-5. Popup: "Order Placed ✅" + message + optional external link button
+1. Tap "Order →" → bottom sheet slides up with summary
+2. "Pay at the counter and show this screen"
+3. CTA button → triggers confirmation popup
+4. Popup: "Order Placed ✅" + done button
+
+For sponsored events: CTA button links to sponsor site.
+For venue deployments: CTA button just closes and resets cart.
 
 ---
 
 ## Sponsor / Event Layer (Mode 1 only)
 
-When a sponsor is paying (e.g. "Coffee is on Purpose Ventures"):
-- Header: "Sponsor x Venue" naming
-- Hero headline: "Coffee is on [Sponsor] ☕"
-- Confirmation CTA: "Thanks [Sponsor]!" button → links to sponsor site
-- Popup message references sponsor
-- Keep "Powered by iTabs" badge in hero
+- Header: "Sponsor x Venue"
+- Hero: "Coffee is on [Sponsor] ☕"
+- Confirmation CTA: "Thanks [Sponsor]!" → sponsor URL
+- Keep "Powered by iTabs" badge
 
 ---
 
 ## Val.town Compatibility — Critical
 
-Val.town parses HTML files as TypeScript/Deno. **NO backtick template literals in JS. Ever.**
+NO backtick template literals in JS. Ever.
 
 ```javascript
 // WRONG
@@ -223,41 +297,6 @@ document.getElementById('total').textContent = `$${total.toFixed(2)}`;
 document.getElementById('total').textContent = '$' + total.toFixed(2);
 ```
 
-Also avoid arrow functions in older-style val contexts — use named functions where possible.
-
----
-
-## Loyalty Section (optional)
-
-Simple points table — no logic needed, display only.
-
-```html
-<div class="loyalty-row">
-  <span>Free 12oz coffee</span>
-  <span style="color: var(--accent);">60 pts</span>
-</div>
-```
-
----
-
-## External Menu Button (optional)
-
-When venue has a full external menu:
-```html
-<button class="menu-button" onclick="window.open('https://venue.com.au', '_blank')">
-  🥪 View the full menu
-</button>
-```
-
----
-
-## Connect Bottom Sheet
-
-Every menu has a Connect button in the header. Opens a bottom sheet with 2–3 links:
-- Visit venue website
-- Full menu (if external)
-- Social media (optional)
-
 ---
 
 ## Output Rules
@@ -268,37 +307,41 @@ Every menu has a Connect button in the header. Opens a bottom sheet with 2–3 l
 - No backtick template literals anywhere in JS
 - Mobile-first: max-width 600px, centred on desktop
 - Always include "Powered by iTabs · itabs.ai" in footer
-- Always test cart bar shows/hides correctly
+- Cart bar shows/hides correctly — test this
 
 ---
 
 ## Lessons Learned
 
 ### Layout
-- Cart bar must be `position: fixed; bottom: 0` — `display: none` by default, `display: flex` when active
-- Bottom sheets use `transform: translateY(100%)` → `translateY(0)` — NOT display none (prevents transition)
-- Modal cards use `opacity: 0 + scale(0.95)` → `opacity: 1 + scale(1)` for smooth entry
-- Container needs `padding-bottom: 120px` so content isn't hidden behind cart bar
+- Cart bar: `position: fixed; bottom: 0` — `display: none` default, `display: flex` when active
+- Bottom sheets: `transform: translateY(100%)` → `translateY(0)` — not display none
+- Modals: `opacity: 0 + scale(0.95)` → `opacity: 1 + scale(1)`
+- Container: `padding-bottom: 120px` so content clears cart bar
 
 ### Cart Logic
-- Use an object `cart = {}` keyed by item name — simplest state that works
-- Size is stored per item: `cart['Flat White'] = { qty: 1, size: 'M' }`
-- Extras are global (apply to whole order), not per-item — simpler UX
-- Always recalculate total from scratch in updateCart() — never increment manually
+- `cart = {}` keyed by item name — simplest state that works
+- Size stored per item: `cart['Flat White'] = { qty: 1, size: 'M' }`
+- Extras global, not per-item
+- Always recalculate total from scratch in updateCart()
+
+### Item IDs
+- Spaces in item names break element IDs
+- Always: `'qty-' + item.name.replace(/\s+/g, '-')`
 
 ### Images
-- Logo images: wrap in white background div if logo is dark-on-transparent
-- External image URLs must be direct (not redirect URLs)
-- Morning Startup logo needed white bg wrapper — lesson: always check logo on dark bg
-
-### Naming
-- Use `id="qty-${drinkName}"` pattern but WITHOUT backticks: `'qty-' + drink.name`
-- Spaces in drink names cause issues in IDs — replace spaces: `drink.name.replace(/\s+/g, '-')`
+- Wrap logos in white bg div if logo is dark-on-transparent
+- Direct image URLs only — no redirects
 
 ### Val.town Deploy
-- Paste HTML directly into index.html val (HTML val type)
-- Same URL every time — no new link needed after update
-- Test on phone immediately after deploy — cart bar behaviour differs on mobile vs desktop preview
+- Paste HTML directly into index.html (HTML val type)
+- Same URL every time after first deploy
+- Test on phone immediately — mobile behaviour differs from desktop preview
+
+### PIN Editor
+- Keep edit link subtle in footer — customers shouldn't see it obviously
+- Silent fail on wrong PIN — don't tell them it's wrong, just don't unlock
+- localStorage works for standalone HTML; blob storage for Val.town
 
 ---
 
@@ -306,13 +349,14 @@ Every menu has a Connect button in the header. Opens a bottom sheet with 2–3 l
 
 ```
 Build an iTabs menu for [Venue Name] in [Suburb].
-Mode: [Simple event / Full venue]
+Mode: [Simple event / Full venue with PIN editor]
 Sponsor: [Sponsor name or none]
-Categories: [list]
-Items: [name: price, name: price ...]
+PIN: [4 digits or "last 4 of phone"]
+Categories and items:
+  [Category]: [item: $price, item: $price]
+  [Category]: [item: $price, item: $price]
 Sizes: [yes — coffee / no]
 Extras: [list or none]
-Loyalty: [yes / no]
-Colour theme: [amber / purple / green / red / teal]
+Colour theme: [amber / purple / green / red / teal / orange]
 External link: [URL or none]
 ```
