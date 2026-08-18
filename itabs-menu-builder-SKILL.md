@@ -1,213 +1,148 @@
 ---
 name: itabs-menu-builder
-description: 'Build interactive iTabs ordering menus - mobile-first scrollable HTML ordering apps for cafes, restaurants, food hall stalls, and events. Use this skill whenever the user wants to: build a menu for a cafe or restaurant, create an event ordering page, build a coffee ordering widget, make a digital menu with a cart, build a menu for a food hall stall or market vendor, or deploy a menu for a hospitality venue. Trigger on phrases like "build a menu for", "ordering page", "digital menu", "cafe menu", "restaurant menu", "event menu", "food hall", "market stall menu", or any request to create a scrollable menu with cart/ordering functionality. This is different from the iTabs widget builder - menus scroll, card decks swipe.'
+description: 'Build interactive iTabs ordering menus — mobile-first scrollable HTML ordering apps for cafes, restaurants, food hall stalls, and events. Use this skill whenever the user wants to: build a menu for a cafe or restaurant, create an event ordering page, build a coffee ordering widget, make a digital menu with a cart, build a menu for a food hall stall or market vendor, or deploy a menu for a hospitality venue. Trigger on phrases like "build a menu for", "ordering page", "digital menu", "cafe menu", "restaurant menu", "event menu", "food hall", "market stall menu", or any request to create a scrollable menu with cart/ordering functionality. This is different from the iTabs widget builder — menus scroll, card decks swipe.'
 ---
 
 # iTabs Menu Builder
 
-Build mobile-first scrollable ordering menus - single self-contained HTML files for cafes, restaurants, food hall stalls, and events. These are NOT swipeable card decks. They scroll like a real menu app.
+Build mobile-first scrollable ordering menus — single self-contained HTML files for cafes, restaurants, food hall stalls, and events. These are NOT swipeable card decks. They scroll like a real menu app.
 
-## What Is an iTabs Menu
+## THE GOLDEN RULE — clone the master, only touch CONFIG
 
-A scrollable ordering app with:
-- Sticky header - venue/brand name + Connect button
-- Welcome hero banner - headline, logo, powered badge
-- Tab nav - usually Coffee / Drinks / Food (3 tabs reads best; more only if needed)
-- Menu sections - categories with item cards
-- Cart bar - fixed at bottom, shows count + total + Order button
-- Order send - SMS pre-order (preferred) or show-screen-at-counter
-- Optional: coffee customise popup, size picker, extras chips, loyalty table, sponsor layer, PIN editor
+There is ONE canonical build: the **iTabs Menu Master** (`itabs-menu-master.html`). Every new venue is a clone of that file. The ONLY block you edit per venue is the `CONFIG` object at the top of the script. Everything below `/* ENGINE — no need to touch below here */` stays identical across every venue.
 
-Single HTML file. Zero server dependencies. Mobile-first (max-width 600px). Dark theme.
+This is what keeps menus consistent. Do not hand-build a menu from scratch and do not re-solve problems the master already solves. If a feature is missing, add it to the master FIRST, then clone.
+
+When building fresh (no master handy), the standards below are mandatory so the result matches a cloned master.
 
 ---
 
-## CRITICAL WORKFLOW - Build Complete, Deploy Once
+## Locked Standards (every menu, no exceptions)
 
-This is the most important lesson and it overrides convenience.
-
-DO NOT edit a live Val.town val incrementally with a small/cheap model (Townie on Haiku rewrites strings it cannot reliably escape and adds em-dashes by reflex - this silently breaks the page and burns money fast).
-
-INSTEAD:
-1. Spec the whole menu first (items, prices, sizes, customise options, order channel).
-2. Build the COMPLETE single file on a capable model. Get it perfect.
-3. Verify it (see Verify Before Deploy below).
-4. Deploy in ONE paste - select all in the val's main.ts, paste, Save. Townie barely involved.
-
-The val is a deploy target, not a workspace. Nothing to incrementally break.
-
-### Verify Before Deploy (every time)
-- Zero non-ASCII characters in the whole file (grep for them).
-- Exactly ONE outer backtick pair (the `const html = ...` template literal). No backticks anywhere inside.
-- Zero `${` interpolation inside the HTML string.
-- Syntax-check the inline JS (extract the script, run node --check).
-- HTTP 200 only proves the page serves. Real proof is the phone thumb-test + console with zero errors.
+1. **Pill-style category tabs** — sticky, horizontally scrollable, highlight the active section as you scroll (scrollspy).
+2. **Popular-first / see-more** — each category shows best-sellers up front (`popular: true`), the rest tuck under a "See X more" button. If nothing is flagged, show the first 2 and hide the rest.
+3. **Photo standard** (see below) — 16:9 hero, 1:1 square item photos, three photo modes, logo fallback.
+4. **Full self-serve PIN editor** — owner edits items AND venue settings, including their own PIN.
+5. **Table number field** on the order sheet (optional).
+6. **Dietary chips + kitchen notes box** on the order form — universal, zero per-venue setup.
+7. **Receipt-as-Reorder** — email receipt with a pre-filled reorder URL. The core differentiator vs mobi2go. (Wired live in the Val.town production build.)
+8. **PIN brute-force lockout** — 5 failed attempts = 15-minute block.
+9. **WhatsApp ordering** — order sent to the venue's WhatsApp with items, total, table, dietary and notes pre-filled. Counter-only is the fallback.
+10. **Version stamp** in the footer — `iTabs Menu v[X] · [slug]` so any live menu is identifiable at a glance.
+11. **No purple.** Ever. Not in any theme, asset, or default.
+12. **No backtick template literals in JS** — Val.town compatibility (see below).
 
 ---
 
-## Two Build Modes
+## Photo Standard
 
-### Mode 1 - Event / Popup Menu (Simple)
-Use for: one-off events, sponsored coffee bars, popup activations
-- Sponsor branding in header and hero
-- Drinks or food only, no admin editing
-- Reference build: Morning Startup x Purpose Ventures x Joey Zaza's
+The photo slot is a product-tier lever, controlled by `CONFIG.photoMode`:
 
-### Mode 2 - Venue Deployment (Full)
-Use for: permanent venue deployment - cafes, restaurants, food hall stalls
-- Venue branding only, no sponsor layer
-- Optional PIN-protected self-serve editor so owner updates prices/items
-- Menu data stored in a JS object at top of file - easy to update
-- Full food + drinks menu
-- Order send: SMS pre-order (preferred) or show-screen-at-counter
-- Reference builds: Velvet Espresso (Perth CBD), Firewood Cafe (Willetton), Leaf & Latte Co.
+- **`"photos"`** — full/paid look. Real per-item photos (1:1 square, center-cropped, rounded). A missing item photo falls back to the venue **logo**, then to a branded name tile. Never a broken gap.
+- **`"logo"`** — free-tier look. Every item shows the venue logo on a clean light tile. Branded, tidy, zero photography. A venue goes live in minutes.
+- **`"off"`** — text-only menu, no image column.
+
+**Hero** is a locked 16:9 banner: hero image → logo badge (if no hero image) → venue initial. Name + tagline overlaid on a gradient.
+
+**Logo tiles** sit on a light (`#f4f4f4`) background with `object-fit: contain` so dark/coloured logos read. Note: a pure-white logo will disappear on white — those venues supply a coloured version or use a hero image instead.
+
+Uploaded photos and logos are auto-resized (photos max 500px, logo max 400px) and compressed before storage to keep it fast and small.
 
 ---
 
-## Coffee Customise Popup (CANONICAL - do not reinvent)
+## Order Form (locked layout)
 
-This is the dialed-in coffee popup from the Velvet Espresso build. Reuse it exactly. Do not re-style or re-structure it from scratch each time.
+Order sheet, top to bottom:
+- Order summary + total
+- **Table number** (optional)
+- **Name**
+- **Email** (receipt + 1-tap reorder)
+- **Dietary** — tappable chips: Gluten free · Vegetarian · Vegan · Dairy free · Nut allergy. Optional, universal, no venue setup.
+- **Notes for the kitchen** — free-text box for anything ("no onion", "sauce on the side", allergy detail).
+- Place order / Keep browsing
 
-Trigger: tap the coffee card (the whole card, or its + button) -> a bottom sheet slides up.
+Dietary selections and notes fold into the order message. Per-item dietary tags exist in the code but are dormant by default — a venue can opt into tagged dishes, but nobody is forced to.
 
-The sheet contains, in order:
-- SIZE: Small / Medium / Large, spelled out IN FULL. Never use S/M/L abbreviations. (A barista misread "small regular" as a size at Velvet - spelling it out fixed it.) Show each size with its price in the picker.
-- SUGAR: tap-the-number chips - 0 / 1 / 2 / 3, with labels none / sugar / sugars. Sugar never changes price.
-- MILK: Black (default), Oat, Almond, Soy, Lactose Free. Non-default milks add +$0.70. The DEFAULT milk is SILENT - it must never appear in the order line. Only a non-default milk shows.
-- EXTRAS: Extra Shot (+$0.50). Optional Flavoured Syrup - ONLY if the venue actually sells syrups. If yes, syrup opens a SUB-PICKER (Vanilla / Caramel / Hazelnut / Lavender / Chai Spice). The syrup sub-picker must NOT close the customise sheet.
-- ADD TO CART button shows the live running total, e.g. "Add to Cart - $6.30".
-
-Order line detail format: "Medium, Oat milk, 2 sugars, extra shot". Size first, then milk (only if non-default), then sugar (only if >0), then extras.
-
-Non-coffee items:
-- Sized items (e.g. salads Regular/Large): same size picker, no milk/sugar/extras.
-- Simple items (food, soft drinks, juices): plain +/- quantity stepper or a one-tap add. No customise sheet.
-
----
-
-## SMS Pre-Order Send (CANONICAL - the Velvet pattern)
-
-This is now the preferred order channel. The order fires as a pre-filled text to the venue.
-
-- Build the message from the cart.
-- Device-detect the separator: iPhone uses `&body=`, Android uses `?body=`.
-  ```javascript
-  var ua = navigator.userAgent || '';
-  var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var sep = isIOS ? '&body=' : '?body=';
-  window.location.href = 'sms:' + PHONE_RAW + sep + encodeURIComponent(msg);
-  ```
-- PHONE_RAW has no spaces (e.g. "0435266454").
-- Message format:
-  ```
-  Hi [Venue]! Order via iTabs:
-  1x Flat White - Medium, Oat milk, 2 sugars, extra shot - $6.30
-  Total: $6.30
-  Ordered via iTabs - [liveurl]
-  ```
-- ALWAYS include the source URL line so the venue knows where the order came from.
-
-NEWLINE TRAP (this killed a build): the SMS message is built inside the val's outer template literal. Write newlines in the SOURCE as `\\n` (double backslash). A bare `\n` in the source is interpreted by the val as a real newline and breaks the JS string -> silent SyntaxError -> dead page. So: `lines.join("\\n")` in the source becomes `lines.join("\n")` in the served page. Correct.
-
-URL note: the val's live address is set by the val name/settings in Val.town, NOT by the code. You cannot fix a URL spelling with a code edit - rename the val if the address itself is wrong, and confirm it loads before pointing the message at it.
-
----
-
-## PIN-Protected Editor (Mode 2, optional)
-
-The self-serve editor lets the owner update prices/items themselves.
-- Hidden, subtle edit link in footer (e.g. "edit").
-- Tap -> PIN prompt. Default PIN = last 4 digits of venue phone.
-- Correct PIN unlocks an editor panel: edit name/price, add/remove items, Save.
-- Wrong PIN = silent fail, stays in customer view. After repeated wrong PINs the lockout below takes over (see PIN Brute-Force Lockout).
-- Storage: blob storage for Val.town (persists across devices); localStorage for standalone HTML (per-device only).
-- If the menu uses per-size coffee pricing, the editor must be size-aware (edit each size price), or skip the editor for that build and note it.
-- The PIN check MUST be server-side (compared in the val handler), never in the client JS. A client-side check is cosmetic - anyone can read it in page source.
-
----
-
-## PIN Brute-Force Lockout (STANDARD - every Mode 2 build with a PIN)
-
-A server-side PIN with no rate limit is still weak: 4 digits = 10,000 combos, scriptable in seconds. Every PIN-protected build ships with per-IP lockout by default. This lives in the val's server handler (normal TypeScript - the ASCII/backtick rules are for the HTML string only, not the handler).
-
-Rules:
-- Track failed attempts per client IP (read it from the request "x-forwarded-for" header, first hop).
-- Store per IP: { fails, lockedUntil } in blob storage.
-- 5 consecutive failures -> lock that IP for 15 minutes.
-- While locked, reject every PIN check with HTTP 429 and reveal nothing about the guess ("Too many attempts, try again shortly").
-- A correct PIN resets that IP to zero.
-- The throttle sits IN FRONT of the PIN comparison on EVERY protected path - unlock, save, AND photo/asset upload - so save cannot be hit directly to bypass the unlock screen.
-- Expire stale records on read (drop old locked-out entries) so the blob does not grow forever.
-- Keep the PIN 4 digits (owner keeps a memorable code) - the lockout is what kills brute-force, not length.
-
-Pattern (server handler, NOT inside the HTML string):
-```typescript
-import { blob } from "https://esm.town/v/std/blob";
-
-const MAX_FAILS = 5;
-const LOCK_MS = 15 * 60 * 1000;
-const KEY = "pin_attempts";
-
-function clientIp(req: Request): string {
-  const xff = req.headers.get("x-forwarded-for") || "";
-  return xff.split(",")[0].trim() || "unknown";
-}
-
-async function checkLock(ip: string) {
-  const all = (await blob.getJSON(KEY)) || {};
-  const rec = all[ip];
-  if (rec && rec.lockedUntil && Date.now() < rec.lockedUntil) return { locked: true, all };
-  return { locked: false, all };
-}
-
-async function registerFail(ip: string, all: any) {
-  const now = Date.now();
-  for (const k of Object.keys(all)) {            // drop stale locked-out records
-    if (all[k].lockedUntil && all[k].lockedUntil < now) delete all[k];
-  }
-  const rec = all[ip] || { fails: 0, lockedUntil: 0 };
-  rec.fails += 1;
-  if (rec.fails >= MAX_FAILS) rec.lockedUntil = now + LOCK_MS;
-  all[ip] = rec;
-  await blob.setJSON(KEY, all);
-}
-
-async function registerSuccess(ip: string, all: any) {
-  delete all[ip];
-  await blob.setJSON(KEY, all);
-}
+### Order message format (WhatsApp / receipt)
+```
+Order from [name] for [Venue]:
+2x Signature Bowl - $32.00
+1x Miso Soup - $5.00
+Total: $37.00 | Table 12
+Dietary: Gluten free
+Notes: no coriander please
 ```
 
-Wire it into EACH PIN-checking route (unlock, save, photo):
-```typescript
-const ip = clientIp(req);
-const { locked, all } = await checkLock(ip);
-if (locked) return new Response("Too many attempts, try again shortly", { status: 429 });
-if (submittedPin !== REAL_PIN) {
-  await registerFail(ip, all);
-  return new Response("Wrong PIN", { status: 401 });
-}
-await registerSuccess(ip, all);
-// ...proceed with unlock / save / photo
+---
 
-```
+## PIN Editor — owner self-serve
 
-Client side: if a PIN submit returns 429, show "Too many attempts, try again in a few minutes" instead of the generic wrong-PIN message. No other UX change.
+Subtle "edit" link in the footer → PIN modal → editor. Wrong PIN fails silently. 5 fails = 15-min lockout (per-IP on Val.town, per-device on standalone).
+
+The editor has TWO parts:
+
+### Venue settings panel (top)
+- Venue name, tagline
+- Phone, WhatsApp (intl format, e.g. 61412…), Email
+- Map link, Website
+- Brand colour (colour picker, "no purple" hint)
+- **Orders go to**: WhatsApp / Counter only
+- **Logo** upload + **Item images** mode (Photos / Logo only / None)
+- **Change PIN** (new + confirm, must be 4 digits and match)
+
+### Per-item editing
+For every item: tap photo tile to upload/change, edit name + description + price, toggle **★ Popular**, toggle **Sold out**, optional dietary tags, Remove. Plus **+ Add item** per category.
+
+**Sold out** keeps the item on the menu but greys it out with a "Sold out" badge and removes the + button — no delete/re-add.
 
 ---
 
-## Questions to Ask Before Building
+## Deployment modes
 
-1. Venue name and suburb?
-2. Mode? Event (simple) or permanent venue (full)
-3. Menu items? Categories + items + prices
-4. Coffee sizes + real per-size prices? (Do NOT guess - flag placeholders clearly if unknown)
-5. Does the venue sell flavoured syrups? (decides the syrup sub-picker)
-6. Order channel? SMS pre-order (need the venue mobile) or show-at-counter
-7. Colour theme? (default amber)
-8. PIN editor? (last 4 of phone, or skip)
+### Standalone HTML (demo / proof / handing over a file)
+- Single self-contained file. Editor saves to `localStorage`.
+- Keys: `itabs-menu-[slug]` (items), `itabs-settings-[slug]` (settings), `itabs-lock-[slug]` (PIN lockout).
+- Good for showing a live demo on your phone before approaching a venue.
 
-If a price is unknown, use a clearly-flagged placeholder and tell the user to confirm the real number with the venue. Never invent a venue's prices silently.
+### Val.town production (the real deployment)
+- Same front end, but the editor reads/writes **blob storage** so edits and orders are shared across everyone.
+- WhatsApp send fires live; receipt email + reorder URL are wired for real.
+- Every production menu carries a `/setup` page from day one (growth ladder: free menu → vendor-connected Square → paid pickup).
+- Full `handle/valName` format always, e.g. `jgwynne7_4bf3679b/zensaki`.
+- Secrets via `Deno.env.get()`.
+- File structure for grown-up venues: `main.ts` + `app.js` + `seed.ts` + `public/` + blob storage.
+
+---
+
+## CONFIG block (the only thing you edit per venue)
+
+```javascript
+var CONFIG = {
+  venue:   "Venue Name",
+  tagline: "Fresh, fast, made to order",
+  slug:    "venue-name",        // storage key + reorder URL
+  accent:  "#f5c400",           // brand colour — NEVER purple
+  accentInk:"#0d0d0d",
+  phone:   "0400 000 000",
+  whatsapp:"61400000000",       // intl, no +. Empty = no WhatsApp.
+  email:   "orders@venue.com",
+  mapUrl:  "https://maps.google.com",
+  siteUrl: "https://itabs.ai",
+  pin:     "0000",              // default = last 4 of phone
+  heroImg: "",                  // 16:9 image. Empty = logo/initial fallback.
+  logo:    "",                  // logo for free-tier + photo fallback
+  orderMethod: "whatsapp",      // "whatsapp" | "counter"
+  photoMode: "photos",          // "photos" | "logo" | "off"
+  categories: [
+    { name: "Mains", items: [
+      { name: "Signature Bowl", desc: "…", price: 16.00, photo: "", popular: true, tags: ["GF"] },
+      { name: "Katsu Curry",    desc: "…", price: 17.50, photo: "", soldOut: true }
+    ]}
+  ]
+};
+```
+
+Item fields: `name`, `desc`, `price`, `photo` (URL/data, optional), `popular` (optional), `soldOut` (optional), `tags` (optional array: V/VG/GF/DF/N/S).
 
 ---
 
@@ -221,17 +156,16 @@ If a price is unknown, use a clearly-flagged placeholder and tell the user to co
   --bg-sheet: #1a1a1a;
   --text-primary: #ffffff;
   --text-muted: #888888;
-  --accent: #f5c400;        /* amber - default, swap per brand */
-  --accent-dark: #0d0d0d;
+  --accent: #f5c400;        /* amber default — swap per brand, never purple */
+  --accent-ink: #0d0d0d;    /* text that sits on accent */
   --border: rgba(255,255,255,0.1);
 }
 ```
 
-### Colour Themes by Venue Type
+### Colour Themes by Venue Type (NO PURPLE)
 | Theme | Accent | Use for |
 |-------|--------|---------|
 | Amber (default) | #f5c400 | Coffee, general cafe, food halls |
-| Purple-Pink | #8b5cf6 -> #ec4899 | Startup events, creative venues |
 | Green | #22c55e | Health food, vegan, salads |
 | Red | #ef4444 | Pizza, burgers, casual dining |
 | Teal | #06b6d4 | Modern restaurants, seafood, Asian |
@@ -239,105 +173,61 @@ If a price is unknown, use a clearly-flagged placeholder and tell the user to co
 
 ---
 
-## Page Structure
+## Val.town Compatibility — Critical
 
-```
-STICKY HEADER  -> brand + Connect button
-WELCOME BANNER -> headline + subtitle + powered-by badge
-TAB NAV        -> Coffee / Drinks / Food (sticky)
-CONTAINER (max-width 600px, centered)
-  SECTION: Category heading
-    ITEM CARDs (coffee = tap to customise; simple = +/- stepper)
-  FOOTER: "Powered by iTabs - itabs.ai" (+ edit link for Mode 2)
-CART BAR (fixed bottom, hidden until items added)
-OVERLAYS
-  Customise sheet (coffee/salad)
-  Connect sheet
-  Order sheet (summary + Send Order by Text)
-  PIN modal + Editor (Mode 2 only)
-```
+NO backtick template literals in JS. Ever. Use string concatenation.
 
----
-
-## Val.town Compatibility - CRITICAL
-
-Plain ASCII ONLY inside the val. A single em-dash, smart quote, curly apostrophe, or emoji = silent SyntaxError that kills the entire page. One uncaught JS error halts the whole script, so a single bad character disables unrelated features too.
-
-NO backtick template literals inside the JS (the only backtick is the outer `const html = ...`).
 ```javascript
 // WRONG
 el.innerHTML = `<div class="${item.name}">`;
 document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+
 // CORRECT
 el.innerHTML = '<div class="' + item.name + '">';
 document.getElementById('total').textContent = '$' + total.toFixed(2);
 ```
 
-Newlines in strings: write `\\n` in the source (see SMS Newline Trap above).
-
-Deploy: paste the finished file into the val's main.ts, Save. Same URL every time after first deploy. Test on a real phone immediately.
-
----
-
-## Lessons Learned
-
-### Process
-- Build complete on a capable model, verify, deploy in one paste. Do not edit a live val incrementally with Haiku-Townie.
-- Watch the Townie usage meter. A $10 plan can hit $70+ in one looping session. Cap it.
-- When reusing a known-good component (the coffee popup, the SMS send), reuse it exactly - do not re-style from scratch and cause a regression.
-
-### Coffee popup
-- Sizes spelled out: Small/Medium/Large, never S/M/L.
-- Default milk is silent in the order. Only non-default milks show.
-- Syrup is a sub-picker, only when the venue sells syrups, and it must not close the customise sheet.
-
-### Val.town
-- ASCII only. Em-dashes/smart quotes/emoji = dead page.
-- One outer backtick pair, no inner backticks, no `${`.
-- `\\n` in source for newlines.
-- The live URL is set by val name/settings, not code.
-
-### Security
-- PIN is checked SERVER-SIDE only. A client-side check is readable in page source and worthless.
-- Every PIN-protected build ships with per-IP lockout (5 fails -> 15 min). The throttle guards unlock, save AND photo - not just the unlock screen.
-- No payment data ever touches an iTabs menu (orders go by SMS, pay in person), so PCI is out of scope. Keep it that way - do not add card capture.
-- The venue's mobile is public in the page by design (the native sms: link needs it). That is an accepted trade-off, not a bug - do not try to "hide" it with a paid SMS gateway unless the venue explicitly wants one.
-
-### Layout
-- Cart bar: fixed bottom, hidden (display none) until >0 items.
-- Bottom sheets: transform translateY(110%) -> translateY(0).
-- Container padding-bottom ~120px so content clears the cart bar.
-- Item IDs: replace spaces with non-space chars (`name.replace(/[^a-zA-Z0-9]/g,'_')`).
-
-### Cart
-- Recalculate total from scratch in updateCart() - never increment manually.
-- Coffee/customised lines keyed by a signature (name + size + sugar + milk + shot) so identical configs stack and different ones split.
+Item element IDs: spaces break IDs — always `'qty-' + name.replace(/[^a-zA-Z0-9]/g, '-')`.
 
 ---
 
 ## Output Rules
 
-- Single self-contained file. For Val.town, output a complete main.ts (the function wrapper + the HTML in one outer template literal).
-- Verify before delivering (non-ASCII, backticks, interpolation, JS syntax).
-- Deliver as a downloadable file, never paste inline.
-- Always include "Powered by iTabs - itabs.ai" in the footer.
-- Mobile-first: max-width 600px, centred on desktop.
+- Build the front end in chat, QA before Jon sees it, deliver as downloadable file(s) via `present_files`.
+- Single self-contained HTML unless it's a multi-file Val.town venue.
+- Save to `/mnt/user-data/outputs/itabs-menu-[slug].html`.
+- Always QA before delivery: zero backticks in JS, JS syntax check, cart show/hide works.
+- Mobile-first: max-width 600px, centred on desktop, dark theme.
+- Footer: "Powered by iTabs · itabs.ai" + version stamp.
 
 ---
+
+## Lessons Learned
+
+- Cart bar: `position: fixed; bottom: 0`; `display: none` default, `display: flex` when active.
+- Bottom sheets: `translateY(100%)` → `translateY(0)`, not display none.
+- Container `padding-bottom: 120px` so content clears the cart bar.
+- `cart = {}` keyed by item name. Always recalculate total from scratch in `updateCart()`.
+- Editor: read all inputs into the working copy (`syncEditor()`) BEFORE any re-render, or typed-but-unsaved text is lost.
+- Photo/logo uploads: resize via canvas before storing, or localStorage/blob bloats.
+- Wrong PIN fails silently — don't confirm it's wrong beyond the attempts-remaining count.
+- Test on a phone immediately — mobile behaviour differs from desktop preview.
+
+---
+
+## Reference build
+
+`itabs-menu-master.html` — the canonical master. Allendale Square cluster (Zensaki, Lunches Down Under, Urban Kitchen) are the first showcase venues, all on Photos mode even though free (proof phase — make them gorgeous).
 
 ## Missy Routing Template
 
 ```
 Build an iTabs menu for [Venue Name] in [Suburb].
-Mode: [Simple event / Full venue]
-PIN: [4 digits or skip]
-Order channel: [SMS to NUMBER / show-at-counter]
-Syrups: [yes - list / no]
+Clone the master; set CONFIG only.
+Accent: [colour, never purple]
+Photo mode: [photos / logo / off]
+Order method: [whatsapp / counter]  WhatsApp: [intl number]
+PIN: [4 digits or "last 4 of phone"]
 Categories and items:
-  [Category]: [item: $price, ...]
-Coffee sizes: [Small/Medium/Large with real prices, or flag placeholders]
-Extras: [list or none]
-Colour theme: [amber / green / red / teal / orange / purple]
-Live URL (for the SMS source line): [valname.val.run]
+  [Category]: [item — desc — $price — popular? — tags?]
 ```
-
