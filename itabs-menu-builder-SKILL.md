@@ -20,17 +20,18 @@ When building fresh (no master handy), the standards below are mandatory so the 
 ## Locked Standards (every menu, no exceptions)
 
 1. **Pill-style category tabs** — sticky, horizontally scrollable, highlight the active section as you scroll (scrollspy).
-2. **Popular-first / see-more** — each category shows best-sellers up front (`popular: true`), the rest tuck under a "See X more" button. If nothing is flagged, show the first 2 and hide the rest.
+2. **Popular-first / see-more** — each category shows best-sellers up front (`popular: true`), the rest tuck under a "See X more" button. If nothing is flagged, show the first 2 and hide the rest. **Tapping a category pill jumps to that section AND auto-expands it** (reveals the hidden items, button flips to "Show less") — a pill tap means "show me everything here." Scrolling past a category you didn't tap leaves it collapsed, so the default stays tidy.
 3. **Photo standard** (see below) — 16:9 hero, 1:1 square item photos, three photo modes, logo fallback.
 4. **Full self-serve PIN editor** — owner edits items AND venue settings, including their own PIN.
-5. **Table number field** on the order sheet (optional).
+5. **Table number OR pickup time** on the order sheet. Dine-in venues get an optional table-number field. Order-ahead venues set `pickupTimes` (e.g. `[0,15,30,45]` mins) and get a pickup-time picker instead (ASAP / +15 / +30 / +45, with a computed "ready around HH:MM"). Setting `pickupTimes` swaps table number → pickup and adds the pickup line to the order message.
 6. **Dietary chips + kitchen notes box** on the order form — universal, zero per-venue setup.
-7. **Receipt-as-Reorder** — email receipt with a pre-filled reorder URL. The core differentiator vs mobi2go. (Wired live in the Val.town production build.)
-8. **PIN brute-force lockout** — 5 failed attempts = 15-minute block.
-9. **WhatsApp ordering** — order sent to the venue's WhatsApp with items, total, table, dietary and notes pre-filled. Counter-only is the fallback.
-10. **Version stamp** in the footer — `iTabs Menu v[X] · [slug]` so any live menu is identifiable at a glance.
-11. **No purple.** Ever. Not in any theme, asset, or default.
-12. **No backtick template literals in JS** — Val.town compatibility (see below).
+7. **Category notes** (optional) — a `note` string on a category renders a small line under the section title (e.g. ramen: "soft-yolk egg, bamboo, black fungus, spring onion"). Use for broth choices, "served on rice", allergen lines.
+8. **Receipt-as-Reorder** — email receipt with a pre-filled reorder URL. The core differentiator vs mobi2go. (Needs an email provider wired in the Val.town build — see below.)
+9. **PIN brute-force lockout** — 5 failed attempts = 15-minute block (per-IP on Val.town, per-device on standalone).
+10. **WhatsApp ordering** — order sent to the venue's WhatsApp with items, total, table/pickup, dietary and notes pre-filled. Counter-only is the fallback.
+11. **Version stamp** in the footer — `iTabs Menu v[X] · [slug]` so any live menu is identifiable at a glance.
+12. **No purple.** Ever. Not in any theme, asset, or default.
+13. **No backtick template literals in the client JS** — so the whole page can be wrapped in a Deno `String.raw\`...\`` template for Val.town without nesting conflicts.
 
 ---
 
@@ -105,12 +106,36 @@ For every item: tap photo tile to upload/change, edit name + description + price
 - Good for showing a live demo on your phone before approaching a venue.
 
 ### Val.town production (the real deployment)
-- Same front end, but the editor reads/writes **blob storage** so edits and orders are shared across everyone.
-- WhatsApp send fires live; receipt email + reorder URL are wired for real.
-- Every production menu carries a `/setup` page from day one (growth ladder: free menu → vendor-connected Square → paid pickup).
+The production build is a **single paste-ready `main.ts`** — a Deno HTTP val. Wrap the whole standalone HTML in a Deno `String.raw\`...\`` template (client JS has zero backticks, so this is safe) and serve it, with blob-backed edit/save routes. No env vars or secrets needed — Val.town blob is built in.
+
+- **Blob storage** via `import { blob } from "https://esm.town/v/std/blob"`. One state key `itabs-menu-[slug]` holds `{ categories, settings }`. Lock keys `itabs-lock-[slug]-[ip]`.
+- **Editor is rewired server-side** (vs the standalone's localStorage):
+  - `loadMenu()` reads `window.__DATA__`, injected by the server via a `__ITABS_DATA__` placeholder replaced with `JSON.stringify` at GET time. The injected settings have `pin` stripped — the PIN is never shipped to the client.
+  - `checkPin()` → `POST /unlock` — server validates against the blob PIN (or `DEFAULT_PIN` before first save), with per-IP brute-force lockout.
+  - `saveEdits()` → `POST /save` — PIN-checked write to blob. Sends settings without `pin` unless the owner changed it. Server keeps the existing PIN if none supplied.
+- **First-load behaviour**: until the first staff Save, the menu serves from the seed CONFIG baked into the file; the first Save writes it to blob and it's shared from then on.
+- **Receipt-as-Reorder email** is the one piece still needing an email provider (e.g. `std/email` or Resend) wired into `/save` or a dedicated route — the confirmation UI already promises it. Flag this per venue.
+- Every production menu should carry a `/setup` page (growth ladder: free menu → vendor-connected Square → paid pickup).
 - Full `handle/valName` format always, e.g. `jgwynne7_4bf3679b/zensaki`.
-- Secrets via `Deno.env.get()`.
-- File structure for grown-up venues: `main.ts` + `app.js` + `seed.ts` + `public/` + blob storage.
+- **Deploy**: paste the whole `main.ts` into the val, Save, open the HTTP URL. Test the editor with the PIN to confirm the blob layer works.
+
+---
+
+## Deploying to Val.town (give these steps to Jon every time a `main.ts` is delivered)
+
+The `main.ts` is fully self-contained — no build step, no env vars, no secrets. Blob storage is built into Val.town. Steps for Jon:
+
+1. Open the `main.ts` file, select all, copy.
+2. In Val.town, open the venue's val (must be an **HTTP val** — it serves a URL).
+3. Click into the code, select all, delete, paste the new `main.ts`.
+4. **Save** — Val.town auto-deploys on save.
+5. Open the val's HTTP endpoint URL — the menu loads.
+
+Notes to include:
+- **PIN starts at the seed value** (e.g. Zensaki `2016`); change it in-app via Venue settings → Change PIN. New PIN is stored in blob, server-side only.
+- **No env vars or secrets to set** — blob is automatic.
+- **Test the blob layer**: on the live URL, open the editor with the PIN, change a price, Save; refresh on a *different* device — the change should persist. If it resets, the blob wiring needs a look.
+- **First load** serves the seed menu baked into the file until the first staff Save writes to blob.
 
 ---
 
@@ -133,8 +158,9 @@ var CONFIG = {
   logo:    "",                  // logo for free-tier + photo fallback
   orderMethod: "whatsapp",      // "whatsapp" | "counter"
   photoMode: "photos",          // "photos" | "logo" | "off"
+  pickupTimes: [0,15,30,45],    // OPTIONAL. Set for order-ahead (pickup picker, mins). Omit for dine-in (table number).
   categories: [
-    { name: "Mains", items: [
+    { name: "Mains", note: "optional line under the section title", items: [
       { name: "Signature Bowl", desc: "…", price: 16.00, photo: "", popular: true, tags: ["GF"] },
       { name: "Katsu Curry",    desc: "…", price: 17.50, photo: "", soldOut: true }
     ]}
@@ -142,6 +168,7 @@ var CONFIG = {
 };
 ```
 
+Category fields: `name`, `items`, `note` (optional line under the title).
 Item fields: `name`, `desc`, `price`, `photo` (URL/data, optional), `popular` (optional), `soldOut` (optional), `tags` (optional array: V/VG/GF/DF/N/S).
 
 ---
@@ -217,7 +244,9 @@ Item element IDs: spaces break IDs — always `'qty-' + name.replace(/[^a-zA-Z0-
 
 ## Reference build
 
-`itabs-menu-master.html` — the canonical master. Allendale Square cluster (Zensaki, Lunches Down Under, Urban Kitchen) are the first showcase venues, all on Photos mode even though free (proof phase — make them gorgeous).
+`itabs-menu-master.html` — the canonical standalone master (localStorage). Clone → set CONFIG → wrap in `main.ts` for production.
+
+**Zensaki** (Allendale Square) is the first venue built to this standard: real menu (Ramen/Udon/Curry/Donburi/Fried Rice/Bento/Sides), pickup times `[0,15,30,45]`, `photoMode: "off"` (text-only until dishes are shot), WhatsApp `61892263034`, PIN `2016`. Production `main.ts` is blob-backed. Lunches Down Under and Urban Kitchen retrofit next. Allendale cluster runs Photos mode once photographed (proof phase — make them gorgeous).
 
 ## Missy Routing Template
 
